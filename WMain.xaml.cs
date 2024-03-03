@@ -155,6 +155,26 @@ public partial class WMain : Window
 
                     break;
                 case Key.T:
+                    // 開關 PopupPlayer 的 TopMost。
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        if (WPPPlayer != null && WPPPlayer.IsShowing())
+                        {
+                            bool isTopmost = WPPPlayer.Topmost;
+
+                            if (isTopmost)
+                            {
+                                WPPPlayer.Topmost = false;
+                            }
+                            else
+                            {
+                                WPPPlayer.Topmost = true;
+                            }
+                        }
+                    }));
+
+                    break;
+                case Key.Y:
                     Visibility visibility = CustomFunction.ShowOrHideWindow(this);
 
                     TaskbarIconUtil.UpdateMIShowOrHideHeader(visibility);
