@@ -54,7 +54,7 @@
       <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="UserAgent" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36</Value>
+      <Value Profile="(Default)">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36</Value>
     </Setting>
     <Setting Name="RDGContentRow1Height" Type="System.Windows.GridLength" Scope="User">
       <Value Profile="(Default)">2*</Value>
@@ -125,9 +125,6 @@
     <Setting Name="B23ClipListExcludedPhrases" Type="System.String" Scope="User">
       <Value Profile="(Default)">锐评;銳評</Value>
     </Setting>
-    <Setting Name="B23ClipListMaxMinutes" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">4</Value>
-    </Setting>
     <Setting Name="PlaywrightScreenshotTimeout" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">30000</Value>
     </Setting>
@@ -162,7 +159,7 @@
       <Value Profile="(Default)">1.37.0</Value>
     </Setting>
     <Setting Name="SecChUa" Type="System.String" Scope="User">
-      <Value Profile="(Default)">"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"</Value>
+      <Value Profile="(Default)">"Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"</Value>
     </Setting>
     <Setting Name="SecChUaMobile" Type="System.String" Scope="Application">
       <Value Profile="(Default)">?0</Value>

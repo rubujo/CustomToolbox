@@ -109,8 +109,7 @@
     <sys:String x:Key="LB23ClipListExcludedPhrases">Excluded phrases</sys:String>
     <sys:String x:Key="LB23ClipListExcludedPhrasesToolTip">A line a phrase</sys:String>
     <sys:String x:Key="CBB23ClipListExportJsonc">Export as *.jsonc</sys:String>
-    <sys:String x:Key="CBB23ClipListCheckUrl">Check URL</sys:String>
-    <sys:String x:Key="CBB23ClipListCheckUrlToolTip">Used to exclude videos like "拜年紀" from playing properly via yt-dlp + libmpv</sys:String>
+    <sys:String x:Key="CBB23ClipListExportJsoncToolTip">Export to the format used by "Youtube Clip Playlist"</sys:String>
     <sys:String x:Key="BtnGenerateB23ClipList">Generate clip list file</sys:String>
     <sys:String x:Key="GBWebTools">Web tools</sys:String>
     <sys:String x:Key="GBFFmpegFunctions">FFmpeg</sys:String>

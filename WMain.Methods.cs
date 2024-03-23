@@ -182,6 +182,7 @@ public partial class WMain
                 LyricsUtil.Init(this);
                 DiscordRichPresenceUtil.Init(this);
                 PlaywrightUtil.Init(this);
+                B23ClipUtil.Init(this);
                 OperationSet.Init(this);
 
                 // 設定 FFmpeg 的路徑。

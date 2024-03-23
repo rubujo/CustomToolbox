@@ -1,7 +1,5 @@
 ﻿using Application = System.Windows.Application;
 using ConsoleTableExt;
-using CustomToolbox.BilibiliApi.Functions;
-using CustomToolbox.BilibiliApi.Models;
 using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Models;
 using CustomToolbox.Common.Utils;
@@ -10,7 +8,6 @@ using Humanizer;
 using Label = System.Windows.Controls.Label;
 using Microsoft.Playwright;
 using OpenCCNET;
-using Page = CustomToolbox.BilibiliApi.Models.Page;
 using ProgressBar = System.Windows.Controls.ProgressBar;
 using Serilog.Events;
 using System.Diagnostics;
@@ -1000,318 +997,26 @@ public class OperationSet
     /// </summary>
     /// <param name="mid">字串，目標使用者的 mid</param>
     /// <param name="exportJsonc">布林值，是否匯出 *.jsonc 格式，預設值為 false</param>
-    /// <param name="httpClient">HttpClient，預設值為 null</param>
-    /// <param name="checkUrl">布林值，是否檢查影片的網址，預設值為 false</param>
-    /// <param name="useDLMethodV2">布林值，是否使用 Ver. 2（Downloader 函式庫）的下載方式，預設值為 false</param>
     /// <param name="ct">CancellationToken</param>
     /// <returns>Task</returns>
     public static async Task DoGenerateB23ClipList(
-        HttpClient? httpClient,
         string mid,
         bool exportJsonc = false,
-        bool checkUrl = false,
-        bool useDLMethodV2 = false,
         CancellationToken ct = default)
     {
         try
         {
             ct.ThrowIfCancellationRequested();
 
-            if (httpClient == null)
-            {
-                throw new Exception("HttpClient is null.");
-            }
-
-            // 取標籤資訊。
-            ReceivedObject<TList> receivedTList = useDLMethodV2 == false ?
-                await SpaceFunction.GetTList(httpClient, mid) :
-                await SpaceFunction.GetTListV2(httpClient, mid);
-
-            if (receivedTList.Code != 0)
-            {
-                string message = $"[{receivedTList.Code}] {receivedTList.Message}" ?? MsgSet.MsgJobFailedAndErrorOccurred;
-
-                _WMain?.WriteLog(message: message);
-
-                return;
-            }
-
-            List<TidData> tidDataSet = [];
-
-            TList? tlist = receivedTList.Data;
-
-            // 當 tlist 等於 null，則表示沒有取到有效的標籤資訊。
-            if (tlist == null)
-            {
-                _WMain?.WriteLog(
-                    message: MsgSet.GetFmtStr(
-                        MsgSet.MsgDataParsingFailedAndCanceled,
-                        mid));
-
-                return;
-            }
-
-            // 理論上應該只抓的到音樂標籤。
-            SetTidDataList(tidDataSet, tlist);
-
-            if (tidDataSet.Count <= 0)
-            {
-                _WMain?.WriteLog(
-                    message: MsgSet.GetFmtStr(
-                        MsgSet.MsgDataParsingFailedAndCanceled,
-                        mid));
-
-                return;
-            }
-
-            _WMain?.WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgPrepToProduceClipListFile,
-                    mid));
-
-            List<ClipData> originDataSource = [];
-
-            int no = 1;
-
-            foreach (TidData tidData in tidDataSet)
-            {
-                ct.ThrowIfCancellationRequested();
-
-                int tid = tidData.TID, ps = 50;
-
-                _WMain?.WriteLog(
-                    message: MsgSet.GetFmtStr(
-                        MsgSet.MsgProcessingDataForTag,
-                        tidData.Name ?? string.Empty,
-                        tidData.TID.ToString()));
-
-                // 取得分頁資訊。
-                ReceivedObject<Page> receivedPage = useDLMethodV2 == false ?
-                    await SpaceFunction.GetPage(httpClient!, mid, tid) :
-                    await SpaceFunction.GetPageV2(httpClient!, mid, tid);
-
-                if (receivedPage.Code != 0)
-                {
-                    string message = receivedPage.Message ?? MsgSet.MsgJobFailedAndErrorOccurred;
-
-                    _WMain?.WriteLog(message: message);
-
-                    return;
-                }
-
-                // 取得此標籤下的影片數量。
-                int videoCount = receivedPage.Data?.Count ?? -1;
-
-                if (videoCount <= 0)
-                {
-                    return;
-                }
-
-                int pages = videoCount / ps, remainder = videoCount % ps;
-
-                if (remainder > 0)
-                {
-                    pages++;
-                }
-
-                int processCount = 1;
-
-                for (int pn = 1; pn <= pages; pn++)
-                {
-                    ct.ThrowIfCancellationRequested();
-
-                    _WMain?.WriteLog(
-                        message: MsgSet.GetFmtStr(
-                            MsgSet.MsgProcessingDataForPage,
-                            pn.ToString(),
-                            pages.ToString()));
-
-                    ReceivedObject<List<VList>> receivedVLists = useDLMethodV2 == false ?
-                        await SpaceFunction.GetVList(httpClient!, mid, tid, pn, ps) :
-                        await SpaceFunction.GetVListV2(httpClient!, mid, tid, pn, ps);
-
-                    if (receivedVLists.Code != 0 ||
-                        receivedVLists.Data == null)
-                    {
-                        string message = receivedPage.Message ?? MsgSet.MsgJobFailedAndErrorOccurred;
-
-                        _WMain?.WriteLog(message: message);
-
-                        continue;
-                    }
-
-                    foreach (VList vlist in receivedVLists.Data)
-                    {
-                        ct.ThrowIfCancellationRequested();
-
-                        _WMain?.WriteLog(
-                            message: MsgSet.GetFmtStr(
-                                MsgSet.MsgProcessingDataForVideo,
-                                processCount.ToString(),
-                                videoCount.ToString()));
-
-                        processCount++;
-
-                        // 強制將網址掛上 "/p1"，以免部分有多分頁的影片會無法被解析。
-                        string url = $"https://b23.tv/{vlist?.Bvid}/p1",
-                            title = vlist?.Title ?? string.Empty;
-
-                        // 2023/2/24 有可能會造成觸發 Bilibili 網站的安全機制。
-                        // 主要用於排除拜年紀的影片。
-                        if (httpClient != null && checkUrl)
-                        {
-                            bool isUrlValid = await CommonFunction.IsUrlValid(httpClient, url);
-
-                            if (!isUrlValid)
-                            {
-                                _WMain?.WriteLog(
-                                    message: MsgSet.GetFmtStr(
-                                        MsgSet.MsgInvalidUrlSkipThisVideo,
-                                        url,
-                                        title));
-
-                                continue;
-                            }
-                        }
-
-                        // 處理 title。
-                        if (!string.IsNullOrEmpty(title))
-                        {
-                            // 排除 title 內會破壞 JSON 字串結構的內容。
-                            title = string.Join(" ", title.Split(Path.GetInvalidFileNameChars()));
-
-                            // 判斷是否有啟用 OpenCC。
-                            if (Properties.Settings.Default.OpenCCS2TWP)
-                            {
-                                // 透過 OpenCC 轉換成正體中文。
-                                title = ZhConverter.HansToTW(title, true);
-                            }
-                        }
-
-                        // 檢查影片的標題是否包含排除字詞。
-                        if (!CheckVideoTitle(title))
-                        {
-                            _WMain?.WriteLog(
-                                message: MsgSet.GetFmtStr(
-                                    MsgSet.MsgSkipThisVideo,
-                                    title));
-
-                            continue;
-                        }
-
-                        string length = vlist?.Length ?? string.Empty;
-
-                        length = CommonFunction.GetFormattedLength(length);
-
-                        TimeSpan endTime = TimeSpan.Parse(length);
-
-                        double endSeconds = endTime.TotalSeconds;
-
-                        // 有多個 Part 的影片，時間會全部加總在一起。
-                        // 根據網路資料取平均值，一首歌大約 4 分鐘。
-                        if (endTime.TotalMinutes > Properties.Settings.Default.B23ClipListMaxMinutes)
-                        {
-                            // 將結束秒數直接歸零。
-                            endSeconds = 0;
-                        }
-
-                        // 判斷 dataSource 是否已存在同樣的資料。
-                        if (originDataSource.Any(n => n.VideoUrlOrID == url))
-                        {
-                            continue;
-                        }
-
-                        originDataSource.Add(new ClipData()
-                        {
-                            VideoUrlOrID = url,
-                            No = no,
-                            Name = title,
-                            StartTime = TimeSpan.FromSeconds(0),
-                            EndTime = TimeSpan.FromSeconds(endSeconds),
-                            SubtitleFileUrl = string.Empty,
-                            IsAudioOnly = false,
-                            IsLivestream = false
-                        });
-
-                        no++;
-                    }
-                }
-
-                _WMain?.WriteLog(
-                    message: MsgSet.GetFmtStr(
-                        MsgSet.MsgProcessResult,
-                        mid,
-                        tid.ToString(),
-                        videoCount.ToString(),
-                        originDataSource.Count.ToString()));
-            }
-
-            if (originDataSource.Count <= 0)
-            {
-                _WMain?.WriteLog(
-                    message: MsgSet.GetFmtStr(
-                        MsgSet.MsgDataParsingFailedAndCantCreateClipListFile,
-                        mid));
-
-                return;
-            }
-
-            // 反向排序 List，讓最舊的資料排第一筆。
-            originDataSource.Reverse();
-
-            // 重新更新 no。
-            for (int i = 0; i < originDataSource.Count; i++)
-            {
-                originDataSource[i].No = i + 1;
-            }
-
-            // 短片清單檔案儲存的路徑。
-            string savedPath = Path.Combine(
-                VariableSet.ClipListsFolderPath,
-                $"{(exportJsonc ? $"{mid}" : $"ClipList_{mid}")}" +
-                $".{(exportJsonc ? "jsonc" : "json")}");
-
-            using FileStream fileStream = new(
-                savedPath,
-                new FileStreamOptions()
-                {
-                    Access = FileAccess.ReadWrite,
-                    Mode = FileMode.Create,
-                    Share = FileShare.ReadWrite
-                });
-
-            List<List<object>> newDataSource = [];
-
-            foreach (ClipData clipData in originDataSource)
-            {
-                newDataSource.Add(
-                [
-                    clipData.VideoUrlOrID ?? string.Empty,
-                    clipData.StartTime.TotalSeconds,
-                    clipData.EndTime.TotalSeconds,
-                    clipData.Name ?? string.Empty,
-                    clipData.SubtitleFileUrl ?? string.Empty
-                ]);
-            }
-
-            object outDataSource = exportJsonc ? newDataSource : originDataSource;
-
-            await JsonSerializer.SerializeAsync(
-                fileStream,
-                outDataSource,
-                VariableSet.SharedJSOptions,
-                ct);
-
-            await fileStream.DisposeAsync();
-
-            _WMain?.WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgClipListFileGeneratedFor,
-                    mid,
-                    savedPath));
-
-            // 開啟 ClipLists 資料夾。
-            CustomFunction.OpenFolder(VariableSet.ClipListsFolderPath);
+            await B23ClipUtil.GenerateClipFiles(
+                listMID: [mid],
+                folderPath: VariableSet.ClipListsFolderPath,
+                forceChromium: false,
+                maxReTryTimes: 3,
+                openFolderWhenFinished: true,
+                exportJsonc: exportJsonc,
+                hansToTW: Properties.Settings.Default.OpenCCS2TWP,
+                ct: ct);
         }
         catch (Exception ex)
         {
@@ -2153,99 +1858,6 @@ public class OperationSet
         #endregion
 
         return filePath1;
-    }
-
-    /// <summary>
-    /// 設定 List<TidData>
-    /// </summary>
-    /// <param name="dataSet">List&lt;TidData&gt;</param>
-    /// <param name="tlist">TList</param>
-    private static void SetTidDataList(List<TidData> dataSet, TList tlist)
-    {
-        // 只允許下列的 Tag 的資料。
-        //※有些 Up 主會將音樂相關的影片放於動畫 Tag 下。
-
-        if (tlist.Tag3 != null)
-        {
-            dataSet.Add(new TidData()
-            {
-                TID = tlist.Tag3.Tid,
-                Name = tlist.Tag3.Name
-            });
-        }
-
-        if (tlist.Tag28 != null)
-        {
-            dataSet.Add(new TidData()
-            {
-                TID = tlist.Tag28.Tid,
-                Name = tlist.Tag28.Name
-            });
-        }
-
-        if (tlist.Tag31 != null)
-        {
-            dataSet.Add(new TidData()
-            {
-                TID = tlist.Tag31.Tid,
-                Name = tlist.Tag31.Name
-            });
-        }
-
-        if (tlist.Tag59 != null)
-        {
-            dataSet.Add(new TidData()
-            {
-                TID = tlist.Tag59.Tid,
-                Name = tlist.Tag59.Name
-            });
-        }
-
-        if (tlist.Tag193 != null)
-        {
-            dataSet.Add(new TidData()
-            {
-                TID = tlist.Tag193.Tid,
-                Name = tlist.Tag193.Name
-            });
-        }
-
-        if (tlist.Tag29 != null)
-        {
-            dataSet.Add(new TidData()
-            {
-                TID = tlist.Tag29.Tid,
-                Name = tlist.Tag29.Name
-            });
-        }
-    }
-
-    /// <summary>
-    /// 檢查標題
-    /// </summary>
-    /// <param name="value">字串，影片的標題</param>
-    /// <returns>布林值</returns>
-    private static bool CheckVideoTitle(string value)
-    {
-        bool isOkay = true;
-
-        string[] excludedPhrases = Properties.Settings.Default
-            .B23ClipListExcludedPhrases
-            .Split(
-                ";".ToCharArray(),
-                StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (string phrase in excludedPhrases)
-        {
-            if (value.Contains(phrase))
-            {
-                isOkay = false;
-
-                break;
-            }
-        }
-
-        return isOkay;
     }
 
     /// <summary>

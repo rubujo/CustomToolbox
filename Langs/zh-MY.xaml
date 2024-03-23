@@ -110,8 +110,6 @@
     <sys:String x:Key="LB23ClipListExcludedPhrasesToolTip">一行一个排除字词</sys:String>
     <sys:String x:Key="CBB23ClipListExportJsonc">导出成 *.jsonc</sys:String>
     <sys:String x:Key="CBB23ClipListExportJsoncToolTip">导出成 "Youtube 视频截选播放清单" 使用的格式</sys:String>
-    <sys:String x:Key="CBB23ClipListCheckUrl">检查网址</sys:String>
-    <sys:String x:Key="CBB23ClipListCheckUrlToolTip">用于排除拜年纪这类无法通过 yt-dlp + libmpv 正常播放的视频</sys:String>
     <sys:String x:Key="BtnGenerateB23ClipList">产生短片清单文件</sys:String>
     <sys:String x:Key="GBWebTools">网页工具</sys:String>
     <sys:String x:Key="GBFFmpegFunctions">FFmpeg</sys:String>

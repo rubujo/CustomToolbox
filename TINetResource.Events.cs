@@ -268,8 +268,7 @@ public partial class WMain
                     BtnYtscToolTakeScreenshot,
                     TBB23UserMID,
                     TBB23ClipListExcludedPhrases,
-                    CBB23ClipListExportJsonc,
-                    CBB23ClipListCheckUrl
+                    CBB23ClipListExportJsonc
                 ];
 
                 Control[] ctrlSet2 =
@@ -289,7 +288,6 @@ public partial class WMain
                     {
                         TBB23UserMID.Text = string.Empty;
                         CBB23ClipListExportJsonc.IsChecked = false;
-                        CBB23ClipListCheckUrl.IsChecked = false;
                     }));
 
                     CustomFunction.BatchSetEnabled(ctrlSet1, true);
@@ -299,12 +297,8 @@ public partial class WMain
                 }
 
                 await OperationSet.DoGenerateB23ClipList(
-                    httpClient: GetHttpClient(),
                     mid: TBB23UserMID.Text,
                     exportJsonc: CBB23ClipListExportJsonc.IsChecked ?? false,
-                    checkUrl: CBB23ClipListCheckUrl.IsChecked ?? false,
-                    // 2023/12/28 預設保持 false。
-                    useDLMethodV2: false,
                     GetGlobalCT());
 
                 // 重設控制項。
@@ -314,7 +308,6 @@ public partial class WMain
                     {
                         TBB23UserMID.Text = string.Empty;
                         CBB23ClipListExportJsonc.IsChecked = false;
-                        CBB23ClipListCheckUrl.IsChecked = false;
                     }));
                 });
 

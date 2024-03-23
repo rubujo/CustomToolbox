@@ -8,7 +8,6 @@
 
 - [使用手冊](MANUAL.md)
 - [更新日誌](CHANGELOG.md)
-- [Bilibili API](BilibiliApi/README.md)
 
 ### 2. 相依性檔案
 

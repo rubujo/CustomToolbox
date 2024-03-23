@@ -419,10 +419,6 @@
                                             Content="{DynamicResource CBB23ClipListExportJsonc}"
                                             ToolTip="{DynamicResource CBB23ClipListExportJsoncToolTip}"
                                             HorizontalAlignment="Left" />
-                                        <CheckBox x:Name="CBB23ClipListCheckUrl"
-                                            Margin="117,237,330,5"
-                                            Content="{DynamicResource CBB23ClipListCheckUrl}"
-                                            ToolTip="{DynamicResource CBB23ClipListCheckUrlToolTip}" />
                                         <Button x:Name="BtnGenerateB23ClipList"
                                             Margin="273,238,10,5"
                                             Content="{DynamicResource BtnGenerateB23ClipList}"

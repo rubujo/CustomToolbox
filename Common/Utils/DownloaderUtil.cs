@@ -1,5 +1,4 @@
 ﻿using Application = System.Windows.Application;
-using CustomToolbox.BilibiliApi.Functions;
 using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Sets;
 using Downloader;
@@ -9,9 +8,6 @@ using ProgressBar = System.Windows.Controls.ProgressBar;
 using Serilog.Events;
 using SevenZipExtractor;
 using System.IO;
-using System.Net;
-
-using System.Net.Http;
 
 namespace CustomToolbox.Common.Utils;
 
@@ -528,68 +524,5 @@ public class DownloaderUtil
         };
 
         return downloadService;
-    }
-
-    /// <summary>
-    /// 取得針對 Bilibili 網站使用的 DownloadConfiguration
-    /// </summary>
-    /// <param name="httpClient">HttpClient，預設值是 null</param>
-    /// <returns>DownloadConfiguration</returns>
-    public static async Task<DownloadConfiguration> GetB23DownloadConfiguration(
-        HttpClient? httpClient = null)
-    {
-        string strB_3 = string.Empty;
-
-        if (httpClient != null)
-        {
-            // 2023/9/22 Bilibili Buvid3 參考來源：
-            // https://github.com/SocialSisterYi/bilibili-API-collect/issues/788
-            // https://github.com/SocialSisterYi/bilibili-API-collect/issues/790
-            // https://github.com/SocialSisterYi/bilibili-API-collect/issues/795
-            (strB_3, string _) = await AuthFunction.GetBuvids(httpClient);
-        }
-
-        DownloadConfiguration downloadConfiguration = new();
-
-        WebHeaderCollection headerCollection = new()
-        {
-            { "Origin", "https://space.bilibili.com" },
-            { "DNT", "1" }
-        };
-
-        if (!string.IsNullOrEmpty(strB_3))
-        {
-            headerCollection.Add("Cookie", $"buvid3={strB_3};");
-        }
-
-        ClientHintsUtil.SetClientHints(headerCollection);
-
-        // TODO: 2023/12/27 因應 -352 風險校驗失敗。（待持續觀察）
-        // 參考：https://github.com/SocialSisterYi/bilibili-API-collect/issues/868
-
-        // 當使用者代理字串值不為空時才設定。
-        if (!string.IsNullOrEmpty(Properties.Settings.Default.UserAgent))
-        {
-            downloadConfiguration.RequestConfiguration = new RequestConfiguration()
-            {
-                // 來源：https://github.com/Nemo2011/bilibili-api/issues/595#issuecomment-1859074892
-                UserAgent = "Mozilla/5.0",
-                Referer = "https://www.bilibili.com",
-                Headers = headerCollection
-            };
-        }
-        else
-        {
-            // 使用預設的 RequestConfiguration。
-            downloadConfiguration.RequestConfiguration = new RequestConfiguration()
-            {
-                // 來源：https://github.com/Nemo2011/bilibili-api/issues/595#issuecomment-1859074892
-                UserAgent = "Mozilla/5.0",
-                Referer = "https://www.bilibili.com",
-                Headers = headerCollection
-            };
-        }
-
-        return downloadConfiguration;
     }
 }
