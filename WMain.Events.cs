@@ -410,7 +410,7 @@ public partial class WMain : Window
 
     #region 資料夾
 
-    public void MIOpenBinsFolder_Click(object sender, RoutedEventArgs e)
+    public void MIOpenBinsFolder_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -426,7 +426,7 @@ public partial class WMain : Window
         }
     }
 
-    public void MIOpenConfigFolder_Click(object sender, RoutedEventArgs e)
+    public void MIOpenConfigFolder_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -448,7 +448,7 @@ public partial class WMain : Window
         }
     }
 
-    public void MIOpenDownloadsFolder_Click(object sender, RoutedEventArgs e)
+    public void MIOpenDownloadsFolder_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -464,7 +464,7 @@ public partial class WMain : Window
         }
     }
 
-    public void MIOpenCliplistsFolder_Click(object sender, RoutedEventArgs e)
+    public void MIOpenCliplistsFolder_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -480,7 +480,7 @@ public partial class WMain : Window
         }
     }
 
-    public void MIOpenLogsFolder_Click(object sender, RoutedEventArgs e)
+    public void MIOpenLogsFolder_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -496,7 +496,7 @@ public partial class WMain : Window
         }
     }
 
-    public void MIOpenLyricsFolder_Click(object sender, RoutedEventArgs e)
+    public void MIOpenLyricsFolder_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -512,7 +512,7 @@ public partial class WMain : Window
         }
     }
 
-    public void MIOpenTempFolder_Click(object sender, RoutedEventArgs e)
+    public void MIOpenTempFolder_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -528,7 +528,7 @@ public partial class WMain : Window
         }
     }
 
-    public void MIOpenModelsFolder_Click(object sender, RoutedEventArgs e)
+    public void MIOpenModelsFolder_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -546,18 +546,21 @@ public partial class WMain : Window
 
     #endregion
 
-    public void MIExit_Click(object sender, RoutedEventArgs e)
+    public void MIExit_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
-            // 強制顯示應用程式以顯示對話視窗。
-            WindowExtensions.Show(
-                this,
-                disableEfficiencyMode: true);
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                // 強制顯示應用程式以顯示對話視窗。
+                WindowExtensions.Show(
+                    this,
+                    disableEfficiencyMode: true);
 
-            WindowState = WindowState.Normal;
+                WindowState = WindowState.Normal;
 
-            ShutdownApp(sender);
+                ShutdownApp(sender);
+            }));
         }
         catch (Exception ex)
         {
@@ -627,42 +630,11 @@ public partial class WMain : Window
         }
     }
 
-    public void MICheckUpdate_Click(object sender, RoutedEventArgs e)
+    public void MICheckUpdate_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
-            // 強制顯示應用程式以顯示對話視窗。
-            WindowExtensions.Show(
-                this,
-                disableEfficiencyMode: true);
-
-            // 只有在 WindowState 是 WindowState.Minimized 時，
-            // 才重新設定 WindowState 至 WindowState.Normal。
-            if (WindowState == WindowState.Minimized)
-            {
-                WindowState = WindowState.Normal;
-            }
-
-            // 檢查應用程式是否有新版本。
-            CheckAppVersion();
-        }
-        catch (Exception ex)
-        {
-            WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
-    public void MIAbout_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            Version? version = Assembly.GetExecutingAssembly().GetName().Version;
-
-            if (version != null)
+            Dispatcher.BeginInvoke(new Action(() =>
             {
                 // 強制顯示應用程式以顯示對話視窗。
                 WindowExtensions.Show(
@@ -676,14 +648,51 @@ public partial class WMain : Window
                     WindowState = WindowState.Normal;
                 }
 
-                string appAbout = MsgSet.GetFmtStr(
-                    MsgSet.AppAbout,
-                    MsgSet.AppName,
-                    version.ToString(),
-                    MsgSet.AppDescription);
+                // 檢查應用程式是否有新版本。
+                CheckAppVersion();
+            }));
+        }
+        catch (Exception ex)
+        {
+            WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
 
-                ShowMsgBox(appAbout, MsgSet.About);
-            }
+    public void MIAbout_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Version? version = Assembly.GetExecutingAssembly().GetName().Version;
+
+                if (version != null)
+                {
+                    // 強制顯示應用程式以顯示對話視窗。
+                    WindowExtensions.Show(
+                        this,
+                        disableEfficiencyMode: true);
+
+                    // 只有在 WindowState 是 WindowState.Minimized 時，
+                    // 才重新設定 WindowState 至 WindowState.Normal。
+                    if (WindowState == WindowState.Minimized)
+                    {
+                        WindowState = WindowState.Normal;
+                    }
+
+                    string appAbout = MsgSet.GetFmtStr(
+                        MsgSet.AppAbout,
+                        MsgSet.AppName,
+                        version.ToString(),
+                        MsgSet.AppDescription);
+
+                    ShowMsgBox(appAbout, MsgSet.About);
+                }
+            }));
         }
         catch (Exception ex)
         {
@@ -1336,7 +1345,7 @@ public partial class WMain : Window
         }
     }
 
-    public void MIRandomPlayClip_Click(object sender, RoutedEventArgs e)
+    public void MIRandomPlayClip_Click(object? sender, RoutedEventArgs e)
     {
         try
         {

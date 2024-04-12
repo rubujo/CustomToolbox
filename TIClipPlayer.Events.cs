@@ -502,14 +502,17 @@ public partial class WMain
         }
     }
 
-    public void BtnMute_Click(object sender, RoutedEventArgs e)
+    public void BtnMute_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
-            if (MPPlayer != null)
+            Dispatcher.BeginInvoke(new Action(() =>
             {
-                MuteClip(MPPlayer.Volume > 0);
-            }
+                if (MPPlayer != null)
+                {
+                    MuteClip(MPPlayer.Volume > 0);
+                }
+            }));
         }
         catch (Exception ex)
         {
@@ -521,7 +524,7 @@ public partial class WMain
         }
     }
 
-    public void BtnPlay_Click(object sender, RoutedEventArgs e)
+    public void BtnPlay_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -559,7 +562,7 @@ public partial class WMain
         }
     }
 
-    public void BtnPause_Click(object sender, RoutedEventArgs e)
+    public void BtnPause_Click(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -575,7 +578,7 @@ public partial class WMain
         }
     }
 
-    public void BtnPrevious_Click(object sender, RoutedEventArgs e)
+    public void BtnPrevious_Click(object? sender, RoutedEventArgs e)
     {
         try
         {

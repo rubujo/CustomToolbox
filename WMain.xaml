@@ -6,7 +6,6 @@
     xmlns:windowsForms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
     xmlns:converters="clr-namespace:CustomToolbox.Common.Converters"
     xmlns:properties="clr-namespace:CustomToolbox.Properties"
-    xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
     xmlns:asf="clr-namespace:AirspaceFixer;assembly=AirspaceFixer"
     mc:Ignorable="d"
     Title="WMain"
@@ -1461,9 +1460,5 @@
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
-        <tb:TaskbarIcon x:Name="TITaskbarIcon"
-            Grid.Row="3"
-            Width="0"
-            Height="0" />
     </Grid>
 </Window>

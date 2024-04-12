@@ -1,11 +1,10 @@
-﻿using Control = System.Windows.Controls.Control;
-using CustomToolbox.Common.Extensions;
+﻿using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Sets;
-using H.NotifyIcon;
 using H.NotifyIcon.Core;
 using Serilog.Events;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace CustomToolbox.Common.Utils;
 
@@ -20,9 +19,9 @@ public class TaskbarIconUtil
     private static string _Title = string.Empty;
 
     /// <summary>
-    /// TaskbarIcon
+    /// TrayIconWithContextMenu
     /// </summary>
-    private static TaskbarIcon? _TaskbarIcon = null;
+    private static TrayIconWithContextMenu? _TrayIconWithContextMenu = null;
 
     /// <summary>
     /// WMain
@@ -32,307 +31,293 @@ public class TaskbarIconUtil
     /// <summary>
     /// 顯示／隱藏
     /// </summary>
-    private static MenuItem MIShowOrHide = new();
+    private static PopupMenuItem PMIShowOrHide = new();
 
     /// <summary>
     /// 靜音／取消靜音
     /// </summary>
-    private static MenuItem MIMute = new();
+    private static PopupMenuItem PMIMute = new();
 
     /// <summary>
     /// 不顯示影片
     /// </summary>
-    private static MenuItem MINoVideo = new();
+    private static PopupMenuItem PMINoVideo = new();
 
     /// <summary>
     /// 隨機播放短片
     /// </summary>
-    private static MenuItem MIRandomPlayClip = new();
+    private static PopupMenuItem PMIRandomPlayClip = new();
 
     /// <summary>
     /// 播放
     /// </summary>
-    private static MenuItem MIPlayClip = new();
+    private static PopupMenuItem PMIPlayClip = new();
 
     /// <summary>
     /// 暫停
     /// </summary>
-    private static MenuItem MIPause = new();
+    private static PopupMenuItem PMIPause = new();
 
     /// <summary>
     /// 上一個
     /// </summary>
-    private static MenuItem MIPrevious = new();
+    private static PopupMenuItem PMIPrevious = new();
 
     /// <summary>
     /// 下一個
     /// </summary>
-    private static MenuItem MINext = new();
+    private static PopupMenuItem PMINext = new();
 
     /// <summary>
     /// 停止
     /// </summary>
-    private static MenuItem MIStop = new();
+    private static PopupMenuItem PMIStop = new();
 
     /// <summary>
     /// 資料夾選單
     /// </summary>
-    private static MenuItem MIFoldersMenu = new();
+    private static PopupSubMenu PSMFoldersMenu = new();
 
     /// <summary>
     /// 開啟 Bins 資料夾
     /// </summary>
-    private static MenuItem MIOpenBinsFolder = new();
+    private static PopupMenuItem PMIOpenBinsFolder = new();
 
     /// <summary>
     /// 開啟設定檔資料夾
     /// </summary>
-    private static MenuItem MIOpenConfigFolder = new();
+    private static PopupMenuItem PMIOpenConfigFolder = new();
 
     /// <summary>
     /// 開啟 Downloads 資料夾
     /// </summary>
-    private static MenuItem MIOpenDownloadsFolder = new();
+    private static PopupMenuItem PMIOpenDownloadsFolder = new();
 
     /// <summary>
     /// 開啟 ClipLists 資料夾
     /// </summary>
-    private static MenuItem MIOpenCliplistsFolder = new();
+    private static PopupMenuItem PMIOpenCliplistsFolder = new();
 
     /// <summary>
     /// 開啟 Logs 資料夾
     /// </summary>
-    private static MenuItem MIOpenLogsFolder = new();
+    private static PopupMenuItem PMIOpenLogsFolder = new();
 
     /// <summary>
     /// 開啟 Lyrics 資料夾
     /// </summary>
-    private static MenuItem MIOpenLyricsFolder = new();
+    private static PopupMenuItem PMIOpenLyricsFolder = new();
 
     /// <summary>
     /// 開啟 Temp 資料夾
     /// </summary>
-    private static MenuItem MIOpenTempFolder = new();
+    private static PopupMenuItem PMIOpenTempFolder = new();
 
     /// <summary>
     /// 開啟 Models 資料夾
     /// </summary>
-    private static MenuItem MIOpenModelsFolder = new();
+    private static PopupMenuItem PMIOpenModelsFolder = new();
 
     /// <summary>
     /// 關於選單
     /// </summary>
-    private static MenuItem MIAboutMenu = new();
+    private static PopupSubMenu PSMAboutMenu = new();
 
     /// <summary>
     /// 關於
     /// </summary>
-    private static MenuItem MIAbout = new();
+    private static PopupMenuItem PMIAbout = new();
 
     /// <summary>
     /// 檢查更新
     /// </summary>
-    private static MenuItem MICheckUpdate = new();
+    private static PopupMenuItem PMICheckUpdate = new();
 
     /// <summary>
     /// 結束
     /// </summary>
-    private static MenuItem MIExit = new();
+    private static PopupMenuItem PMIExit = new();
 
     /// <summary>
     /// 右鍵選單
     /// </summary>
-    private static ContextMenu CMContextMenu = new();
+    private static PopupMenu PMContextMenu = new();
 
     /// <summary>
-    /// 初始化 TaskbarIcon
+    /// 初始化 TrayIconWithContextMenu
     /// </summary>
     /// <param name="wMain">WMain</param>
-    /// <param name="taskbarIcon">TaskbarIcon</param>
-    public static void Init(WMain wMain, TaskbarIcon taskbarIcon)
+    public static void Init(WMain wMain)
     {
         try
         {
-            _TaskbarIcon = taskbarIcon;
             _WMain = wMain;
             _Title = _WMain.Title;
 
-            _TaskbarIcon.Icon = Properties.Resources.app_icon;
-            _TaskbarIcon.ToolTipText = _Title;
-
-            // 設定 _TaskbarIcon 的滑鼠雙點擊事件。
-            _TaskbarIcon.TrayMouseDoubleClick += TaskbarIcon_TrayMouseDoubleClick;
+            _TrayIconWithContextMenu = new TrayIconWithContextMenu()
+            {
+                Icon = Properties.Resources.app_icon.Handle,
+                ToolTip = _Title
+            };
+            _TrayIconWithContextMenu.MessageWindow.MouseEventReceived += MessageWindow_MouseEventReceived;
 
             // 設定 MenuItem。
-            MIShowOrHide = new()
+            PMIShowOrHide = new()
             {
-                Header = MsgSet.Hide
+                Text = MsgSet.Hide
             };
-            MIMute = new()
+            PMIMute = new()
             {
-                Header = _WMain.BtnMute.Content
+                Text = _WMain.BtnMute.Content?.ToString() ?? string.Empty
             };
-            MINoVideo = new()
+            PMINoVideo = new()
             {
-                Header = MsgSet.MIEnableNoVideo
+                Text = MsgSet.MIEnableNoVideo
             };
-            MIRandomPlayClip = new()
+            PMIRandomPlayClip = new()
             {
-                Header = _WMain.MIRandomPlayClip.Header
+                Text = _WMain.MIRandomPlayClip.Header?.ToString() ?? string.Empty
             };
-            MIPlayClip = new()
+            PMIPlayClip = new()
             {
-                Header = _WMain.BtnPlay.Content
+                Text = _WMain.BtnPlay.Content?.ToString() ?? string.Empty
             };
-            MIPause = new()
+            PMIPause = new()
             {
-                Header = _WMain.BtnPause.Content
+                Text = _WMain.BtnPause.Content?.ToString() ?? string.Empty
             };
-            MIPrevious = new()
+            PMIPrevious = new()
             {
-                Header = _WMain.BtnPrevious.Content
+                Text = _WMain.BtnPrevious.Content?.ToString() ?? string.Empty
             };
-            MINext = new()
+            PMINext = new()
             {
-                Header = _WMain.BtnNext.Content
+                Text = _WMain.BtnNext.Content?.ToString() ?? string.Empty
             };
-            MIStop = new()
+            PMIStop = new()
             {
-                Header = _WMain.BtnStop.Content
+                Text = _WMain.BtnStop.Content?.ToString() ?? string.Empty
             };
-            MIFoldersMenu = new()
+            PSMFoldersMenu = new()
             {
-                Header = _WMain.MIFoldersMenu.Header
+                Text = _WMain.MIFoldersMenu.Header?.ToString() ?? string.Empty
             };
-            MIOpenBinsFolder = new()
+            PMIOpenBinsFolder = new()
             {
-                Header = _WMain.MIOpenBinsFolder.Header
+                Text = _WMain.MIOpenBinsFolder.Header?.ToString() ?? string.Empty
             };
-            MIOpenConfigFolder = new()
+            PMIOpenConfigFolder = new()
             {
-                Header = _WMain.MIOpenConfigFolder.Header
+                Text = _WMain.MIOpenConfigFolder.Header?.ToString() ?? string.Empty
             };
-            MIOpenDownloadsFolder = new()
+            PMIOpenDownloadsFolder = new()
             {
-                Header = _WMain.MIOpenDownloadsFolder.Header
+                Text = _WMain.MIOpenDownloadsFolder.Header?.ToString() ?? string.Empty
             };
-            MIOpenCliplistsFolder = new()
+            PMIOpenCliplistsFolder = new()
             {
-                Header = _WMain.MIOpenCliplistsFolder.Header
+                Text = _WMain.MIOpenCliplistsFolder.Header?.ToString() ?? string.Empty
             };
-            MIOpenLogsFolder = new()
+            PMIOpenLogsFolder = new()
             {
-                Header = _WMain.MIOpenLogsFolder.Header
+                Text = _WMain.MIOpenLogsFolder.Header?.ToString() ?? string.Empty
             };
-            MIOpenLyricsFolder = new()
+            PMIOpenLyricsFolder = new()
             {
-                Header = _WMain.MIOpenLyricsFolder.Header
+                Text = _WMain.MIOpenLyricsFolder.Header?.ToString() ?? string.Empty
             };
-            MIOpenTempFolder = new()
+            PMIOpenTempFolder = new()
             {
-                Header = _WMain.MIOpenTempFolder.Header
+                Text = _WMain.MIOpenTempFolder.Header?.ToString() ?? string.Empty
             };
-            MIOpenModelsFolder = new()
+            PMIOpenModelsFolder = new()
             {
-                Header = _WMain.MIOpenModelsFolder.Header
+                Text = _WMain.MIOpenModelsFolder.Header?.ToString() ?? string.Empty
             };
-            MIAboutMenu = new()
+            PSMAboutMenu = new()
             {
-                Header = _WMain.MIAbout.Header
+                Text = _WMain.MIAbout.Header?.ToString() ?? string.Empty
             };
-            MICheckUpdate = new()
+            PMICheckUpdate = new()
             {
-                Header = _WMain.MICheckUpdate.Header
+                Text = _WMain.MICheckUpdate.Header?.ToString() ?? string.Empty
             };
-            MIAbout = new()
+            PMIAbout = new()
             {
-                Header = _WMain.MIAbout.Header
+                Text = _WMain.MIAbout.Header?.ToString() ?? string.Empty
             };
-            MIExit = new()
+            PMIExit = new()
             {
-                Header = _WMain.MIExit.Header
+                Text = _WMain.MIExit.Header?.ToString() ?? string.Empty
             };
 
             // 設定 MenuItem 的點擊事件。
-            MIShowOrHide.Click += MIShowOrHide_Click;
-            MIMute.Click += _WMain.BtnMute_Click;
-            MINoVideo.Click += MINoVideo_Click;
-            MIRandomPlayClip.Click += _WMain.MIRandomPlayClip_Click;
-            MIPlayClip.Click += _WMain.BtnPlay_Click;
-            MIPause.Click += _WMain.BtnPause_Click;
-            MIPrevious.Click += _WMain.BtnPrevious_Click;
-            MINext.Click += _WMain.BtnNext_Click;
-            MIStop.Click += _WMain.BtnStop_Click;
-            MICheckUpdate.Click += _WMain.MICheckUpdate_Click;
-            MIOpenBinsFolder.Click += _WMain.MIOpenBinsFolder_Click;
-            MIOpenConfigFolder.Click += _WMain.MIOpenConfigFolder_Click;
-            MIOpenDownloadsFolder.Click += _WMain.MIOpenDownloadsFolder_Click;
-            MIOpenCliplistsFolder.Click += _WMain.MIOpenCliplistsFolder_Click;
-            MIOpenLogsFolder.Click += _WMain.MIOpenLogsFolder_Click;
-            MIOpenLyricsFolder.Click += _WMain.MIOpenLyricsFolder_Click;
-            MIOpenTempFolder.Click += _WMain.MIOpenTempFolder_Click;
-            MIOpenModelsFolder.Click += _WMain.MIOpenModelsFolder_Click;
-            MIAbout.Click += _WMain.MIAbout_Click;
-            MIExit.Click += _WMain.MIExit_Click;
+            PMIShowOrHide.Click += PMIShowOrHide_Click;
+            PMIMute.Click += PMIMute_Click;
+            PMINoVideo.Click += PMINoVideo_Click;
+            PMIRandomPlayClip.Click += PMIRandomPlayClip_Click;
+            PMIPlayClip.Click += PMIPlayClip_Click;
+            PMIPause.Click += PMIPause_Click;
+            PMIPrevious.Click += PMIPrevious_Click;
+            PMINext.Click += PMINext_Click;
+            PMIStop.Click += PMIStop_Click;
+            PMIOpenBinsFolder.Click += PMIOpenBinsFolder_Click;
+            PMIOpenConfigFolder.Click += PMIOpenConfigFolder_Click;
+            PMIOpenDownloadsFolder.Click += PMIOpenDownloadsFolder_Click;
+            PMIOpenCliplistsFolder.Click += PMIOpenCliplistsFolder_Click;
+            PMIOpenLogsFolder.Click += PMIOpenLogsFolder_Click;
+            PMIOpenLyricsFolder.Click += PMIOpenLyricsFolder_Click;
+            PMIOpenTempFolder.Click += PMIOpenTempFolder_Click;
+            PMIOpenModelsFolder.Click += PMIOpenModelsFolder_Click;
+            PMICheckUpdate.Click += PMICheckUpdate_Click;
+            PMIAbout.Click += PMIAbout_Click;
+            PMIExit.Click += PMIExit_Click;
 
             // 建立右鍵選單。
-            CMContextMenu = new();
+            PMContextMenu = new();
 
-            CMContextMenu.Items.Clear();
-            CMContextMenu.Items.Add(MIShowOrHide);
-            CMContextMenu.Items.Add(new Separator());
-            CMContextMenu.Items.Add(MIMute);
-            CMContextMenu.Items.Add(MINoVideo);
-            CMContextMenu.Items.Add(MIRandomPlayClip);
-            CMContextMenu.Items.Add(new Separator());
-            CMContextMenu.Items.Add(MIPlayClip);
-            CMContextMenu.Items.Add(MIPause);
-            CMContextMenu.Items.Add(MIPrevious);
-            CMContextMenu.Items.Add(MINext);
-            CMContextMenu.Items.Add(MIStop);
-            CMContextMenu.Items.Add(new Separator());
+            PMContextMenu.Items.Clear();
+            PMContextMenu.Items.Add(PMIShowOrHide);
+            PMContextMenu.Items.Add(new PopupMenuSeparator());
+            PMContextMenu.Items.Add(PMIMute);
+            PMContextMenu.Items.Add(PMINoVideo);
+            PMContextMenu.Items.Add(PMIRandomPlayClip);
+            PMContextMenu.Items.Add(new PopupMenuSeparator());
+            PMContextMenu.Items.Add(PMIPlayClip);
+            PMContextMenu.Items.Add(PMIPause);
+            PMContextMenu.Items.Add(PMIPrevious);
+            PMContextMenu.Items.Add(PMINext);
+            PMContextMenu.Items.Add(PMIStop);
+            PMContextMenu.Items.Add(new PopupMenuSeparator());
 
-            MIFoldersMenu.Items.Clear();
-            MIFoldersMenu.Items.Add(MIOpenBinsFolder);
-            MIFoldersMenu.Items.Add(MIOpenConfigFolder);
-            MIFoldersMenu.Items.Add(MIOpenDownloadsFolder);
-            MIFoldersMenu.Items.Add(MIOpenCliplistsFolder);
-            MIFoldersMenu.Items.Add(MIOpenLogsFolder);
-            MIFoldersMenu.Items.Add(MIOpenLyricsFolder);
-            MIFoldersMenu.Items.Add(MIOpenTempFolder);
-            MIFoldersMenu.Items.Add(MIOpenModelsFolder);
+            PSMFoldersMenu.Items.Clear();
+            PSMFoldersMenu.Items.Add(PMIOpenBinsFolder);
+            PSMFoldersMenu.Items.Add(PMIOpenConfigFolder);
+            PSMFoldersMenu.Items.Add(PMIOpenDownloadsFolder);
+            PSMFoldersMenu.Items.Add(PMIOpenCliplistsFolder);
+            PSMFoldersMenu.Items.Add(PMIOpenLogsFolder);
+            PSMFoldersMenu.Items.Add(PMIOpenLyricsFolder);
+            PSMFoldersMenu.Items.Add(PMIOpenTempFolder);
+            PSMFoldersMenu.Items.Add(PMIOpenModelsFolder);
 
-            CMContextMenu.Items.Add(MIFoldersMenu);
-            CMContextMenu.Items.Add(new Separator());
+            PMContextMenu.Items.Add(PSMFoldersMenu);
+            PMContextMenu.Items.Add(new PopupMenuSeparator());
 
-            MIAboutMenu.Items.Clear();
-            MIAboutMenu.Items.Add(MICheckUpdate);
-            MIAboutMenu.Items.Add(MIAbout);
+            PSMAboutMenu.Items.Clear();
+            PSMAboutMenu.Items.Add(PMICheckUpdate);
+            PSMAboutMenu.Items.Add(PMIAbout);
 
-            CMContextMenu.Items.Add(MIAboutMenu);
-            CMContextMenu.Items.Add(MIExit);
+            PMContextMenu.Items.Add(PSMAboutMenu);
+            PMContextMenu.Items.Add(PMIExit);
 
-            // 設定 _TaskbarIcon 的右鍵選單。
-            _TaskbarIcon.ContextMenu = CMContextMenu;
+            // 設定 _TrayIconWithContextMenu 的右鍵選單。
+            _TrayIconWithContextMenu.ContextMenu = PMContextMenu;
 
             // 設定 MenuItem 啟用／禁用。
             SetMenuItems();
-        }
-        catch (Exception ex)
-        {
-            _WMain?.WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
 
-    private static void TaskbarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            MIShowOrHide.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+            // 建立 _TrayIconWithContextMenu。
+            _TrayIconWithContextMenu.Create();
         }
         catch (Exception ex)
         {
@@ -355,7 +340,7 @@ public class TaskbarIconUtil
     {
         try
         {
-            _TaskbarIcon?.ShowNotification(
+            _TrayIconWithContextMenu?.ShowNotification(
                  _Title,
                 message,
                 notificationIcon);
@@ -379,9 +364,9 @@ public class TaskbarIconUtil
     {
         try
         {
-            if (_TaskbarIcon != null)
+            if (_TrayIconWithContextMenu != null)
             {
-                _TaskbarIcon.ToolTipText = string.IsNullOrEmpty(message) ? _Title : message;
+                _TrayIconWithContextMenu.ToolTip = string.IsNullOrEmpty(message) ? _Title : message;
             }
         }
         catch (Exception ex)
@@ -395,7 +380,7 @@ public class TaskbarIconUtil
     }
 
     /// <summary>
-    /// 拋棄 TaskbarIcon
+    /// 拋棄 TrayIconWithContextMenu
     /// </summary>
     public static void Dispose()
     {
@@ -403,32 +388,32 @@ public class TaskbarIconUtil
         {
             if (_WMain != null)
             {
-                MIShowOrHide.Click -= MIShowOrHide_Click;
-                MIMute.Click -= _WMain.BtnMute_Click;
-                MINoVideo.Click -= MINoVideo_Click;
-                MIRandomPlayClip.Click -= _WMain.MIRandomPlayClip_Click;
-                MIPlayClip.Click -= _WMain.BtnPlay_Click;
-                MIPause.Click -= _WMain.BtnPause_Click;
-                MIPrevious.Click -= _WMain.BtnPrevious_Click;
-                MINext.Click -= _WMain.BtnNext_Click;
-                MIStop.Click -= _WMain.BtnStop_Click;
-                MIOpenBinsFolder.Click -= _WMain.MIOpenBinsFolder_Click;
-                MIOpenConfigFolder.Click -= _WMain.MIOpenConfigFolder_Click;
-                MIOpenDownloadsFolder.Click -= _WMain.MIOpenDownloadsFolder_Click;
-                MIOpenCliplistsFolder.Click -= _WMain.MIOpenCliplistsFolder_Click;
-                MIOpenLogsFolder.Click -= _WMain.MIOpenLogsFolder_Click;
-                MIOpenLyricsFolder.Click -= _WMain.MIOpenLyricsFolder_Click;
-                MIOpenTempFolder.Click -= _WMain.MIOpenTempFolder_Click;
-                MIOpenModelsFolder.Click -= _WMain.MIOpenModelsFolder_Click;
-                MICheckUpdate.Click -= _WMain.MICheckUpdate_Click;
-                MIAbout.Click -= _WMain.MIAbout_Click;
-                MIExit.Click -= _WMain.MIExit_Click;
+                PMIShowOrHide.Click -= PMIShowOrHide_Click;
+                PMIMute.Click -= PMIMute_Click;
+                PMINoVideo.Click -= PMINoVideo_Click;
+                PMIRandomPlayClip.Click -= PMIRandomPlayClip_Click;
+                PMIPlayClip.Click -= PMIPlayClip_Click;
+                PMIPause.Click -= PMIPause_Click;
+                PMIPrevious.Click -= PMIPrevious_Click;
+                PMINext.Click -= PMINext_Click;
+                PMIStop.Click -= PMIStop_Click;
+                PMIOpenBinsFolder.Click -= PMIOpenBinsFolder_Click;
+                PMIOpenConfigFolder.Click -= PMIOpenConfigFolder_Click;
+                PMIOpenDownloadsFolder.Click -= PMIOpenDownloadsFolder_Click;
+                PMIOpenCliplistsFolder.Click -= PMIOpenCliplistsFolder_Click;
+                PMIOpenLogsFolder.Click -= PMIOpenLogsFolder_Click;
+                PMIOpenLyricsFolder.Click -= PMIOpenLyricsFolder_Click;
+                PMIOpenTempFolder.Click -= PMIOpenTempFolder_Click;
+                PMIOpenModelsFolder.Click -= PMIOpenModelsFolder_Click;
+                PMICheckUpdate.Click -= PMICheckUpdate_Click;
+                PMIAbout.Click -= PMIAbout_Click;
+                PMIExit.Click -= PMIExit_Click;
             }
 
-            if (_TaskbarIcon != null)
+            if (_TrayIconWithContextMenu != null)
             {
-                _TaskbarIcon.Dispose();
-                _TaskbarIcon = null;
+                _TrayIconWithContextMenu.Dispose();
+                _TrayIconWithContextMenu = null;
             }
         }
         catch (Exception ex)
@@ -449,17 +434,17 @@ public class TaskbarIconUtil
     {
         try
         {
-            Control[] ctrlSet1 =
+            PopupMenuItem[] ctrlSet1 =
             [
-                MIPlayClip
+                PMIPlayClip
             ];
 
-            Control[] ctrlSet2 =
+            PopupMenuItem[] ctrlSet2 =
             [
-                MIPrevious,
-                MINext,
-                MIPause,
-                MIStop
+                PMIPrevious,
+                PMINext,
+                PMIPause,
+                PMIStop
             ];
 
             CustomFunction.BatchSetEnabled(ctrlSet1, enable);
@@ -485,11 +470,11 @@ public class TaskbarIconUtil
         {
             if (!string.IsNullOrEmpty(value))
             {
-                MIMute.Header = value;
+                PMIMute.Text = value;
             }
             else
             {
-                MIMute.Header = _WMain?.BtnMute.Content;
+                PMIMute.Text = _WMain?.BtnMute.Content?.ToString() ?? string.Empty;
             }
         }
         catch (Exception ex)
@@ -513,69 +498,19 @@ public class TaskbarIconUtil
             switch (visibility)
             {
                 case Visibility.Visible:
-                    MIShowOrHide.Header = MsgSet.Hide;
+                    PMIShowOrHide.Text = MsgSet.Hide;
 
                     break;
                 case Visibility.Collapsed:
-                    MIShowOrHide.Header = MsgSet.Show;
+                    PMIShowOrHide.Text = MsgSet.Show;
 
                     break;
                 case Visibility.Hidden:
-                    MIShowOrHide.Header = MsgSet.Show;
+                    PMIShowOrHide.Text = MsgSet.Show;
 
                     break;
                 default:
                     break;
-            }
-        }
-        catch (Exception ex)
-        {
-            _WMain?.WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
-    private static void MIShowOrHide_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            Visibility visibility = CustomFunction.ShowOrHideWindow(_WMain);
-
-            UpdateMIShowOrHideHeader(visibility);
-        }
-        catch (Exception ex)
-        {
-            _WMain?.WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
-    private static void MINoVideo_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (_WMain != null)
-            {
-                if (_WMain.CBNoVideo.IsChecked == true)
-                {
-                    _WMain.CBNoVideo.IsChecked = false;
-                }
-                else
-                {
-                    _WMain.CBNoVideo.IsChecked = true;
-                }
-
-                string header = _WMain.CBNoVideo.IsChecked == true ?
-                    MsgSet.MIDisableNoVideo :
-                    MsgSet.MIEnableNoVideo;
-
-                MINoVideo.Header = header;
             }
         }
         catch (Exception ex)
@@ -600,7 +535,7 @@ public class TaskbarIconUtil
                 MsgSet.MIDisableNoVideo :
                 MsgSet.MIEnableNoVideo;
 
-            MINoVideo.Header = header;
+            PMINoVideo.Text = header;
         }
         catch (Exception ex)
         {
@@ -624,7 +559,7 @@ public class TaskbarIconUtil
                 MsgSet.Resume :
                 MsgSet.Pause;
 
-            MIPause.Header = header;
+            PMIPause.Text = header;
         }
         catch (Exception ex)
         {
@@ -635,4 +570,368 @@ public class TaskbarIconUtil
                 logEventLevel: LogEventLevel.Error);
         }
     }
+
+    #region 事件
+
+    private static void MessageWindow_MouseEventReceived(object? sender, MessageWindow.MouseEventReceivedEventArgs e)
+    {
+        try
+        {
+            if (e.MouseEvent == MouseEvent.IconLeftDoubleClick)
+            {
+                PMIShowOrHide_Click(sender, e);
+            }
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIShowOrHide_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            Visibility visibility = CustomFunction.ShowOrHideWindow(_WMain);
+
+            UpdateMIShowOrHideHeader(visibility);
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMINoVideo_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (_WMain != null)
+                {
+                    if (_WMain.CBNoVideo.IsChecked == true)
+                    {
+                        _WMain.CBNoVideo.IsChecked = false;
+                    }
+                    else
+                    {
+                        _WMain.CBNoVideo.IsChecked = true;
+                    }
+
+                    string header = _WMain.CBNoVideo.IsChecked == true ?
+                        MsgSet.MIDisableNoVideo :
+                        MsgSet.MIEnableNoVideo;
+
+                    PMINoVideo.Text = header;
+                }
+            }));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIMute_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.BtnMute_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIRandomPlayClip_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIRandomPlayClip_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIPlayClip_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.BtnPlay_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIPause_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.BtnPause_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIPrevious_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.BtnPrevious_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMINext_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.BtnNext_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIStop_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.BtnStop_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMICheckUpdate_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MICheckUpdate_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIOpenBinsFolder_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIOpenBinsFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIOpenConfigFolder_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIOpenConfigFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIOpenDownloadsFolder_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIOpenDownloadsFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIOpenCliplistsFolder_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIOpenCliplistsFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIOpenLogsFolder_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIOpenLogsFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIOpenLyricsFolder_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIOpenLyricsFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIOpenTempFolder_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIOpenTempFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIOpenModelsFolder_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIOpenModelsFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIAbout_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIAbout_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    private static void PMIExit_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            _WMain?.MIExit_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
+        }
+        catch (Exception ex)
+        {
+            _WMain?.WriteLog(
+                message: MsgSet.GetFmtStr(
+                    MsgSet.MsgErrorOccured,
+                    ex.GetExceptionMessage()),
+                logEventLevel: LogEventLevel.Error);
+        }
+    }
+
+    #endregion
 }

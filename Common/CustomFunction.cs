@@ -3,6 +3,7 @@ using Contorl = System.Windows.Controls.Control;
 using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Sets;
 using H.NotifyIcon;
+using H.NotifyIcon.Core;
 using Mpv.NET.Player;
 using RichTextBox = System.Windows.Controls.RichTextBox;
 using Serilog;
@@ -92,6 +93,24 @@ public class CustomFunction
                 {
                     control.IsEnabled = enabled;
                 }
+            }
+        }));
+    }
+
+    /// <summary>
+    /// 批次設定啟用
+    /// </summary>
+    /// <param name="controls">PopupMenuItem 的陣列</param>
+    /// <param name="enabled">布林值，啟用，預設值為 true</param>
+    public static void BatchSetEnabled(
+        PopupMenuItem[] controls,
+        bool enabled = true)
+    {
+        Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+        {
+            foreach (PopupMenuItem control in controls)
+            {
+                control.Enabled = enabled;
             }
         }));
     }
@@ -369,34 +388,40 @@ public class CustomFunction
     {
         try
         {
-            if (window != null)
+            window?.Dispatcher.BeginInvoke(new Action(() =>
             {
-                switch (window.Visibility)
+                if (window != null)
                 {
-                    case Visibility.Visible:
-                        WindowExtensions.Hide(
-                            window,
-                            enableEfficiencyMode: true);
+                    switch (window.Visibility)
+                    {
+                        case Visibility.Visible:
+                            WindowExtensions.Hide(
+                                window,
+                                enableEfficiencyMode: true);
 
-                        break;
-                    case Visibility.Collapsed:
-                        WindowExtensions.Show(
-                            window,
-                            disableEfficiencyMode: true);
+                            break;
+                        case Visibility.Collapsed:
+                            WindowExtensions.Show(
+                                window,
+                                disableEfficiencyMode: true);
 
-                        break;
-                    case Visibility.Hidden:
-                        WindowExtensions.Show(
-                            window,
-                            disableEfficiencyMode: true);
+                            break;
+                        case Visibility.Hidden:
+                            WindowExtensions.Show(
+                                window,
+                                disableEfficiencyMode: true);
 
-                        break;
-                    default:
-                        break;
+                            break;
+                        default:
+                            break;
+                    }
                 }
+            }));
 
-                return window.Visibility;
-            }
+            // 等待 300 毫秒後再回傳。
+            SpinWait.SpinUntil(() => { return false; }, 300);
+
+            return window?.Visibility ?? Visibility.Visible;
         }
         catch (Exception ex)
         {
@@ -455,7 +480,6 @@ public class CustomFunction
     /// <returns>字串</returns>
     public static string GetUserAgent()
     {
-        // 2023/1/4 Bilibili 的 API 會依據使用者代理字串來封鎖連線。
         return $"{Properties.Settings.Default.UserAgent}";
     }
 

@@ -187,11 +187,11 @@ public partial class WMain
                                 lyricFilePath :
                                 clipData.SubtitleFileUrl;
 
-                            MPPlayer?.API.Command(new string[]
-                            {
+                            MPPlayer?.API.Command(
+                            [
                                 "sub-add",
                                 subtitlePath
-                            });
+                            ]);
                         }
                     }
                     catch (Exception ex)

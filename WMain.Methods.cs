@@ -210,7 +210,8 @@ public partial class WMain
 
                 InitB23ClipListExcludedPhrases();
 
-                TaskbarIconUtil.Init(this, TITaskbarIcon);
+                // 建立 TrayIconWithContextMenu。
+                TaskbarIconUtil.Init(this);
 
                 Version? version = Assembly.GetExecutingAssembly().GetName().Version;
 
