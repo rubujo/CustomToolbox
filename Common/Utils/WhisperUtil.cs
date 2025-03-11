@@ -47,6 +47,7 @@ public class WhisperUtil
             "Large V1" => GgmlType.LargeV1,
             "Large V2" => GgmlType.LargeV2,
             "Large V3" => GgmlType.LargeV3,
+            "Large V3 Turbo" => GgmlType.LargeV3Turbo,
             _ => GgmlType.Base
         };
     }
@@ -93,6 +94,7 @@ public class WhisperUtil
             GgmlType.LargeV1 => "ggml-large-v1",
             GgmlType.LargeV2 => "ggml-large-v2",
             GgmlType.LargeV3 => "ggml-large-v3",
+            GgmlType.LargeV3Turbo => "ggml-large-v3-turbo",
             _ => string.Empty
         },
         subFileName = quantizationType switch
@@ -169,7 +171,7 @@ public class WhisperUtil
                         .WithGreedySamplingStrategy();
 
                 greedySamplingStrategyBuilder.WithBestOf(bestOf);
-
+                
                 whisperProcessor = greedySamplingStrategyBuilder
                     .ParentBuilder.Build();
 

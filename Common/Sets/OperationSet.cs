@@ -1335,13 +1335,10 @@ public class OperationSet
 
     /// <summary>
     /// 執行偵測語言
-    /// <para>因為會發生 System.AccessViolationException，故 speedUp 需設為 false。</para>
     /// </summary>
     /// <param name="inputFilePath">字串，檔案的路徑</param>
     /// <param name="language">字串，語言（兩碼），預設值為 "auto"</param>
     /// <param name="enableTranslate">布林值，啟用翻譯成英文，預設值為 false</param>
-    /// <param name="enableSpeedUp2x">布林值，啟用 SpeedUp2x，預設值為 false</param>
-    /// <param name="speedUp">布林值，是否加速，預設值為 false</param>
     /// <param name="ggmlType">GgmlType，預設值為 GgmlType.Small</param>
     /// <param name="quantizationType">QuantizationType，預設值為 QuantizationType.NoQuantization</param>
     /// <param name="samplingStrategyType">SamplingStrategyType，預設值為 SamplingStrategyType.Default</param>
@@ -1355,8 +1352,6 @@ public class OperationSet
         string inputFilePath,
         string language = "auto",
         bool enableTranslate = false,
-        bool enableSpeedUp2x = false,
-        bool speedUp = false,
         GgmlType ggmlType = GgmlType.Small,
         QuantizationType quantizationType = QuantizationType.NoQuantization,
         SamplingStrategyType samplingStrategyType = SamplingStrategyType.Default,
@@ -1427,11 +1422,6 @@ public class OperationSet
                     whisperProcessorBuilder.WithTranslate();
                 }
 
-                if (enableSpeedUp2x)
-                {
-                    whisperProcessorBuilder.WithSpeedUp2x();
-                }
-
                 if (!string.IsNullOrEmpty(prompt))
                 {
                     whisperProcessorBuilder.WithPrompt(prompt);
@@ -1455,7 +1445,7 @@ public class OperationSet
                     float[] avgSamples = await waveParser.GetAvgSamplesAsync(cancellationToken);
 
                     (string? detectedLanguage, float? probability) = whisperProcessor
-                        .DetectLanguageWithProbability(samples: avgSamples, speedUp: speedUp);
+                        .DetectLanguageWithProbability(samples: avgSamples);
 
                     string rawResult = string.IsNullOrEmpty(detectedLanguage) ?
                             MsgSet.MsgWhisperDetectLanguageFailed :
@@ -1552,7 +1542,6 @@ public class OperationSet
     /// <param name="inputFilePath">字串，檔案的路徑</param>
     /// <param name="language">字串，語言（兩碼），預設值為 "auto"</param>
     /// <param name="enableTranslate">布林值，啟用翻譯成英文，預設值為 false</param>
-    /// <param name="enableSpeedUp2x">布林值，啟用 SpeedUp2x，預設值為 false</param>
     /// <param name="exportWebVtt">布林值，匯出 WebVTT 格式，預設值為 false</param>
     /// <param name="ggmlType">GgmlType，預設值為 GgmlType.Small</param>
     /// <param name="quantizationType">QuantizationType，預設值為 QuantizationType.NoQuantization</param>
@@ -1567,7 +1556,6 @@ public class OperationSet
         string inputFilePath,
         string language = "auto",
         bool enableTranslate = false,
-        bool enableSpeedUp2x = false,
         bool exportWebVtt = false,
         GgmlType ggmlType = GgmlType.Small,
         QuantizationType quantizationType = QuantizationType.NoQuantization,
@@ -1652,11 +1640,6 @@ public class OperationSet
                 if (enableTranslate)
                 {
                     whisperProcessorBuilder.WithTranslate();
-                }
-
-                if (enableSpeedUp2x)
-                {
-                    whisperProcessorBuilder.WithSpeedUp2x();
                 }
 
                 if (!string.IsNullOrEmpty(prompt))

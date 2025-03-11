@@ -959,9 +959,6 @@ public partial class WMain
                         inputFilePath: inputFilePath,
                         language: language,
                         enableTranslate: enableTranslate,
-                        enableSpeedUp2x: enableSpeedUp2x,
-                        // 2023/10/9 因為啟用時容易發生錯誤，所以固定保持為 false。
-                        speedUp: false,
                         ggmlType: ggmlType,
                         quantizationType: quantizationType,
                         samplingStrategyType: samplingStrategyType,
@@ -1103,7 +1100,6 @@ public partial class WMain
                         inputFilePath: inputFilePath,
                         language: language,
                         enableTranslate: enableTranslate,
-                        enableSpeedUp2x: enableSpeedUp2x,
                         exportWebVtt: exportWebVtt,
                         ggmlType: ggmlType,
                         quantizationType: quantizationType,
