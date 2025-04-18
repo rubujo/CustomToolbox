@@ -256,7 +256,7 @@ public class PlaywrightUtil
         HtmlWeb htmlWeb = new();
         HtmlDocument htmlDocument = htmlWeb.Load(url);
 
-        HtmlNodeCollection metaTags = htmlDocument.DocumentNode.SelectNodes("//meta");
+        HtmlNodeCollection? metaTags = htmlDocument.DocumentNode.SelectNodes("//meta");
 
         if (metaTags != null)
         {

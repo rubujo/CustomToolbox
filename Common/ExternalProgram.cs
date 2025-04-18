@@ -887,7 +887,7 @@ public class ExternalProgram
                         MsgSet.MsgWhisperModelIsNotExists,
                         modelFileName));
 
-                using Stream stream = await WhisperGgmlDownloader.GetGgmlModelAsync(
+                using Stream stream = await WhisperGgmlDownloader.Default.GetGgmlModelAsync(
                     ggmlType,
                     quantizationType,
                     cancellationToken);
