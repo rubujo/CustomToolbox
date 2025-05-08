@@ -1,14 +1,10 @@
-﻿using Application = System.Windows.Application;
-using ButtonBase = System.Windows.Controls.Primitives.ButtonBase;
-using CustomToolbox.Common;
+﻿using CustomToolbox.Common;
 using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Models;
 using CustomToolbox.Common.Models.ImportPlaylist;
 using CustomToolbox.Common.Models.UpdateNotifier;
 using CustomToolbox.Common.Sets;
 using CustomToolbox.Common.Utils;
-using KeyEventHandler = System.Windows.Input.KeyEventHandler;
-using MessageBox = System.Windows.MessageBox;
 using OpenCCNET;
 using Serilog.Events;
 using System.Collections.ObjectModel;
@@ -23,6 +19,10 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
 using Xabe.FFmpeg;
+using Application = System.Windows.Application;
+using ButtonBase = System.Windows.Controls.Primitives.ButtonBase;
+using KeyEventHandler = System.Windows.Input.KeyEventHandler;
+using MessageBox = System.Windows.MessageBox;
 
 namespace CustomToolbox;
 
@@ -178,9 +178,6 @@ public partial class WMain
                 ExternalProgram.Init(this);
                 DataGridExtension.Init(this);
                 ClipListUtil.Init(this);
-                DiscordRichPresenceUtil.Init(this);
-                LyricsUtil.Init(this);
-                DiscordRichPresenceUtil.Init(this);
                 PlaywrightUtil.Init(this);
                 B23ClipUtil.Init(this);
                 OperationSet.Init(this);
@@ -199,7 +196,6 @@ public partial class WMain
                 CBNoVideo.IsChecked = Properties.Settings.Default.MpvNetLibNoVideo;
                 CBChromaKey.IsChecked = Properties.Settings.Default.MpvNetLibChromaKey;
                 RBClipPlayer.IsChecked = true;
-                CBAutoLyric.IsChecked = Properties.Settings.Default.NetPlaylistAutoLyric;
                 MIFullDownloadFirst.IsChecked = Properties.Settings.Default.FullDownloadFirst;
                 MIDeleteSourceFile.IsChecked = Properties.Settings.Default.DeleteSourceFile;
                 TBCustomSubscriberAmount.Text = "-1";
@@ -227,7 +223,6 @@ public partial class WMain
                 TBWhisperBeamSize.Text = Properties.Settings.Default.WhisperBeamSize.ToString();
                 TBWhisperPatience.Text = Properties.Settings.Default.WhisperPatience.ToString();
                 TBWhisperBestOf.Text = Properties.Settings.Default.WhisperBestOf.ToString();
-                CBWhisperSpeedUp2x.IsChecked = Properties.Settings.Default.WhisperSpeedUp2x;
                 CBWhisperTranslateToEnglish.IsChecked = Properties.Settings.Default.WhisperTranslateToEnglish;
                 CBWhisperExportWebVTTAlso.IsChecked = Properties.Settings.Default.WhisperExportWebVTTAlso;
 
@@ -256,7 +251,6 @@ public partial class WMain
                 TBSecChUa.Text = Properties.Settings.Default.SecChUa;
                 TBAppendSeconds.Text = Properties.Settings.Default.PlaylistAppendSeconds.ToString();
                 CBEnableMpvLogVerbose.IsChecked = Properties.Settings.Default.MpvNetLibLogVerbose;
-                CBEnableDiscordRichPresence.IsChecked = Properties.Settings.Default.DiscordRichPresence;
                 CBEnableOpenCCS2TWP.IsChecked = Properties.Settings.Default.OpenCCS2TWP;
 
                 InitGpuDevice();
@@ -279,12 +273,6 @@ public partial class WMain
                         TTTips.SetToolTip(
                             PlayerHost,
                             MsgSet.MsgDoubleClickToTogglePopupWindow);
-
-                        // 根據設定值決定是否要初始化 Discord 豐富狀態。
-                        if (Properties.Settings.Default.DiscordRichPresence)
-                        {
-                            DiscordRichPresenceUtil.InitRichPresence();
-                        }
 
                         // 延後 1.5 秒後再執行。
                         Task.Delay(1500).ContinueWith(t =>
@@ -320,12 +308,11 @@ public partial class WMain
     {
         try
         {
-            List<string> files = CustomFunction
+            List<string> files = [.. CustomFunction
                 .EnumerateFiles(
                     VariableSet.ClipListsFolderPath,
                     VariableSet.AllowedExts,
-                    SearchOption.TopDirectoryOnly)
-                .ToList();
+                    SearchOption.TopDirectoryOnly)];
 
             DoLoadClipLists(files);
         }
@@ -476,10 +463,9 @@ public partial class WMain
     /// <returns>List&lt;IOrderedEnumerable&lt;ClipData&gt;&gt;</returns>
     private List<IOrderedEnumerable<ClipData>> GetGroupedAllClipDatas()
     {
-        return GlobalDataSet
+        return [.. GlobalDataSet
             .GroupBy(n => n.VideoUrlOrID)
-            .Select(n => n.OrderBy(m => m.No))
-            .ToList();
+            .Select(n => n.OrderBy(m => m.No))];
     }
 
     /// <summary>
@@ -586,10 +572,6 @@ public partial class WMain
             // 執行清除方法。
             MPPlayer?.Dispose();
             TaskbarIconUtil.Dispose();
-            DiscordRichPresenceUtil.Dispose();
-
-            // 清除變數值。
-            GlobalDRClient = null;
 
             // 用於在應用程式結束前儲存特定 Grid 的
             // RowDefinition、ColumnDefinition 的值。

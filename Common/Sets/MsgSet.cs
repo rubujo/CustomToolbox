@@ -876,69 +876,6 @@ public class MsgSet
         string.Empty;
 
     /// <summary>
-    /// 訊息：SongId：{0}
-    /// </summary>
-    public static readonly string MsgSongID = Application.Current
-        .FindResource("MsgSongID").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：已找到 [{0}]「{1}」可用的 *.lrc 檔案，網址：{2}
-    /// </summary>
-    public static readonly string MsgFoundAvailableLrcFile = Application.Current
-        .FindResource("MsgFoundAvailableLrcFile").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：開始秒數：{0}
-    /// </summary>
-    public static readonly string MsgStartSeconds = Application.Current
-        .FindResource("MsgStartSeconds").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：*.lrc 檔案的偏移秒數：{0}
-    /// </summary>
-    public static readonly string MsgLrcFileOffsetSeconds = Application.Current
-        .FindResource("MsgLrcFileOffsetSeconds").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：*.lrc 檔案的實際偏移秒數：{0}
-    /// </summary>
-    public static readonly string MsgLrcFileActualOffsetSeconds = Application.Current
-        .FindResource("MsgLrcFileActualOffsetSeconds").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：[{0}]「{1}」已被手動禁用歌詞搜尋功能。
-    /// </summary>
-    public static readonly string MsgManualDisabledLyricSearch = Application.Current
-        .FindResource("MsgManualDisabledLyricSearch").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：[{0}]「{1}」歌曲搜尋失敗。
-    /// </summary>
-    public static readonly string MsgSongFindingFailed = Application.Current
-        .FindResource("MsgSongFindingFailed").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：[{0}]「{1}」有找到歌曲但歌詞搜尋失敗，記錄為 -SongId（{2}）。
-    /// </summary>
-    public static readonly string MsgFoundSongButNoLyric = Application.Current
-        .FindResource("MsgFoundSongButNoLyric").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：[{0}]「{1}」找不到對應的 *.lrc 資訊。
-    /// </summary>
-    public static readonly string MsgCanNotFindLrcFileInfo = Application.Current
-        .FindResource("MsgCanNotFindLrcFileInfo").ToString() ??
-        string.Empty;
-
-    /// <summary>
     /// 訊息：已更新不支援的域名。
     /// </summary>
     public static readonly string MsgUpdateUnsupportedDomains = Application.Current
@@ -981,48 +918,6 @@ public class MsgSet
         string.Empty;
 
     /// <summary>
-    /// 訊息：[{0}]：已連接的管道：{1}
-    /// </summary>
-    public static readonly string MsgDiscordRichPresenceConnectedPipe = Application.Current
-        .FindResource("MsgDiscordRichPresenceConnectedPipe").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：[{0}]：已失敗的管道：{1}
-    /// </summary>
-    public static readonly string MsgDiscordRichPresenceFailedPipe = Application.Current
-        .FindResource("MsgDiscordRichPresenceFailedPipe").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：Discord 豐富狀態，連線失敗已達 {0} 次，已暫時關閉此功能。
-    /// </summary>
-    public static readonly string MsgDiscordRichPresenceConnectionFailed = Application.Current
-        .FindResource("MsgDiscordRichPresenceConnectionFailed").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：[{0}]：已接收到使用者 {1} 的準備完成。
-    /// </summary>
-    public static readonly string MsgDiscordRichPresenceOnReady = Application.Current
-        .FindResource("MsgDiscordRichPresenceOnReady").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：已啟用 Discord 豐富狀態。
-    /// </summary>
-    public static readonly string MsgEnableDiscordRichPresence = Application.Current
-        .FindResource("MsgEnableDiscordRichPresence").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：已停用 Discord 豐富狀態。
-    /// </summary>
-    public static readonly string MsgDisableDiscordRichPresence = Application.Current
-        .FindResource("MsgDisableDiscordRichPresence").ToString() ??
-        string.Empty;
-
-    /// <summary>
     /// 訊息：您選擇的視訊檔案為不支援的格式。
     /// </summary>
     public static readonly string MsgSelectedVideoNonSupported = Application.Current
@@ -1034,69 +929,6 @@ public class MsgSet
     /// </summary>
     public static readonly string MsgB23UserMidCantBeEmpty = Application.Current
         .FindResource("MsgB23UserMidCantBeEmpty").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：作業失敗，發生非預期的錯誤。
-    /// </summary>
-    public static readonly string MsgJobFailedAndErrorOccurred = Application.Current
-        .FindResource("MsgJobFailedAndErrorOccurred").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：資料解析失敗，沒有取到有效的標籤資訊。已取消產製 Bilibili 使用者（{0}）的短片清單檔案。
-    /// </summary>
-    public static readonly string MsgDataParsingFailedAndCanceled = Application.Current
-        .FindResource("MsgDataParsingFailedAndCanceled").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：正在準備產製 Bilibili 使用者（{0}）的短片清單檔案。
-    /// </summary>
-    public static readonly string MsgPrepToProduceClipListFile = Application.Current
-        .FindResource("MsgPrepToProduceClipListFile").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：正在處裡標籤「{0}（{1}）」的資料。
-    /// </summary>
-    public static readonly string MsgProcessingDataForTag = Application.Current
-        .FindResource("MsgProcessingDataForTag").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：正在處裡第 {0}/{1} 頁的資料。
-    /// </summary>
-    public static readonly string MsgProcessingDataForPage = Application.Current
-        .FindResource("MsgProcessingDataForPage").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：正在處裡第 {0}/{1} 部影片的資料。
-    /// </summary>
-    public static readonly string MsgProcessingDataForVideo = Application.Current
-        .FindResource("MsgProcessingDataForVideo").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：Bilibili 使用者（{0}）在此 tid（{1}）下共有 {2} 部影片，已成功處理 {3} 部影片的資料。
-    /// </summary>
-    public static readonly string MsgProcessResult = Application.Current
-        .FindResource("MsgProcessResult").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：資料解析失敗，無法產生 Bilibili 使用者（{0}）的短片清單檔案。
-    /// </summary>
-    public static readonly string MsgDataParsingFailedAndCantCreateClipListFile = Application.Current
-        .FindResource("MsgDataParsingFailedAndCantCreateClipListFile").ToString() ??
-        string.Empty;
-
-    /// <summary>
-    /// 訊息：已產生 Bilibili 使用者（{0}）的短片清單檔案：{1}
-    /// </summary>
-    public static readonly string MsgClipListFileGeneratedFor = Application.Current
-        .FindResource("MsgClipListFileGeneratedFor").ToString() ??
         string.Empty;
 
     /// <summary>

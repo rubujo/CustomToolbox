@@ -1,15 +1,15 @@
-﻿using CheckBox = System.Windows.Controls.CheckBox;
-using ComboBox = System.Windows.Controls.ComboBox;
-using Control = System.Windows.Controls.Control;
-using CustomToolbox.Common;
+﻿using CustomToolbox.Common;
 using CustomToolbox.Common.Extensions;
-using CustomToolbox.Common.Utils;
 using CustomToolbox.Common.Models;
 using CustomToolbox.Common.Sets;
+using CustomToolbox.Common.Utils;
 using Serilog.Events;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using CheckBox = System.Windows.Controls.CheckBox;
+using ComboBox = System.Windows.Controls.ComboBox;
+using Control = System.Windows.Controls.Control;
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace CustomToolbox;
@@ -304,81 +304,6 @@ public partial class WMain
                             Properties.Settings.Default.Save();
 
                             SetMpvPlayerLogLevel(value);
-                        }
-                    }
-                }
-            }));
-        }
-        catch (Exception ex)
-        {
-            WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
-    private void CBEnableDiscordRichPresence_Checked(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                if (!IsInitializing)
-                {
-                    CheckBox control = (CheckBox)sender;
-
-                    bool value = control.IsChecked ?? true;
-
-                    if (value)
-                    {
-                        if (Properties.Settings.Default.DiscordRichPresence != value)
-                        {
-                            Properties.Settings.Default.DiscordRichPresence = value;
-                            Properties.Settings.Default.Save();
-
-                            GlobalDRClient = null;
-
-                            DiscordRichPresenceUtil.Init(this);
-                            DiscordRichPresenceUtil.InitRichPresence();
-                        }
-                    }
-                }
-            }));
-        }
-        catch (Exception ex)
-        {
-            WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
-    private void CBEnableDiscordRichPresence_Unchecked(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                if (!IsInitializing)
-                {
-                    CheckBox control = (CheckBox)sender;
-
-                    bool value = control.IsChecked ?? false;
-
-                    if (!value)
-                    {
-                        if (Properties.Settings.Default.DiscordRichPresence != value)
-                        {
-                            Properties.Settings.Default.DiscordRichPresence = value;
-                            Properties.Settings.Default.Save();
-
-                            DiscordRichPresenceUtil.Dispose();
-
-                            GlobalDRClient = null;
                         }
                     }
                 }

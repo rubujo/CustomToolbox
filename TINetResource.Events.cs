@@ -1,6 +1,4 @@
-﻿using CheckBox = System.Windows.Controls.CheckBox;
-using Control = System.Windows.Controls.Control;
-using CustomToolbox.Common;
+﻿using CustomToolbox.Common;
 using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Models;
 using CustomToolbox.Common.Sets;
@@ -9,6 +7,7 @@ using Serilog.Events;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Control = System.Windows.Controls.Control;
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace CustomToolbox;
@@ -18,66 +17,6 @@ namespace CustomToolbox;
 /// </summary>
 public partial class WMain
 {
-    private void CBAutoLyric_Checked(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                CheckBox control = (CheckBox)sender;
-
-                bool value = control.IsChecked ?? true;
-
-                if (value)
-                {
-                    if (Properties.Settings.Default.NetPlaylistAutoLyric != value)
-                    {
-                        Properties.Settings.Default.NetPlaylistAutoLyric = value;
-                        Properties.Settings.Default.Save();
-                    }
-                }
-            }));
-        }
-        catch (Exception ex)
-        {
-            WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
-    private void CBAutoLyric_Unchecked(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                CheckBox control = (CheckBox)sender;
-
-                bool value = control.IsChecked ?? false;
-
-                if (!value)
-                {
-                    if (Properties.Settings.Default.NetPlaylistAutoLyric != value)
-                    {
-                        Properties.Settings.Default.NetPlaylistAutoLyric = value;
-                        Properties.Settings.Default.Save();
-                    }
-                }
-            }));
-        }
-        catch (Exception ex)
-        {
-            WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
     private void BtnRefreshNetResurce_Click(object sender, RoutedEventArgs e)
     {
         try

@@ -15,6 +15,7 @@ namespace CustomToolbox.Common.Utils;
 /// <summary>
 /// Bilibili 短片工具
 /// </summary>
+[Obsolete("已棄用，待重寫")]
 public class B23ClipUtil
 {
     /// <summary>
@@ -66,11 +67,6 @@ public class B23ClipUtil
             {
                 string mid = listMID[i];
 
-                _WMain?.WriteLog(
-                    message: MsgSet.GetFmtStr(
-                        MsgSet.MsgPrepToProduceClipListFile,
-                        mid));
-
                 List<ClipData> listClipData = await GetClipList(
                     mid: mid,
                     listFailedMID: ref listFailedMID,
@@ -87,12 +83,6 @@ public class B23ClipUtil
 
                 // 儲存檔案檔案。
                 await listClipData.SaveFile(filePath, exportJsonc, ct);
-
-                _WMain?.WriteLog(
-                     message: MsgSet.GetFmtStr(
-                         MsgSet.MsgClipListFileGeneratedFor,
-                         mid,
-                         filePath));
             }
 
             // 判斷是否在處理完成後開啟資料夾。

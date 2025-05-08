@@ -1,8 +1,8 @@
-﻿using static CustomToolbox.Common.Sets.EnumSet;
-using OpenCCNET;
+﻿using OpenCCNET;
 using System.Globalization;
 using Whisper.net;
 using Whisper.net.Ggml;
+using static CustomToolbox.Common.Sets.EnumSet;
 
 namespace CustomToolbox.Common.Utils;
 
@@ -171,7 +171,7 @@ public class WhisperUtil
                         .WithGreedySamplingStrategy();
 
                 greedySamplingStrategyBuilder.WithBestOf(bestOf);
-                
+
                 whisperProcessor = greedySamplingStrategyBuilder
                     .ParentBuilder.Build();
 

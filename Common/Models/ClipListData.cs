@@ -3,23 +3,17 @@
 /// <summary>
 /// 短片清單資料
 /// </summary>
-public class ClipListData
+public class ClipListData(string name, string path)
 {
     /// <summary>
     /// 名稱
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; set; } = name;
 
     /// <summary>
     /// 路徑
     /// </summary>
-    public string Path { get; set; }
-
-    public ClipListData(string name, string path)
-    {
-        Name = name;
-        Path = path;
-    }
+    public string Path { get; set; } = path;
 
     /// <summary>
     /// 轉換成字串

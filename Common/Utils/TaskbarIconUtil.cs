@@ -4,7 +4,6 @@ using H.NotifyIcon.Core;
 using Serilog.Events;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
 
 namespace CustomToolbox.Common.Utils;
 
@@ -102,11 +101,6 @@ public class TaskbarIconUtil
     /// 開啟 Logs 資料夾
     /// </summary>
     private static PopupMenuItem PMIOpenLogsFolder = new();
-
-    /// <summary>
-    /// 開啟 Lyrics 資料夾
-    /// </summary>
-    private static PopupMenuItem PMIOpenLyricsFolder = new();
 
     /// <summary>
     /// 開啟 Temp 資料夾
@@ -222,10 +216,6 @@ public class TaskbarIconUtil
             {
                 Text = _WMain.MIOpenLogsFolder.Header?.ToString() ?? string.Empty
             };
-            PMIOpenLyricsFolder = new()
-            {
-                Text = _WMain.MIOpenLyricsFolder.Header?.ToString() ?? string.Empty
-            };
             PMIOpenTempFolder = new()
             {
                 Text = _WMain.MIOpenTempFolder.Header?.ToString() ?? string.Empty
@@ -266,7 +256,6 @@ public class TaskbarIconUtil
             PMIOpenDownloadsFolder.Click += PMIOpenDownloadsFolder_Click;
             PMIOpenCliplistsFolder.Click += PMIOpenCliplistsFolder_Click;
             PMIOpenLogsFolder.Click += PMIOpenLogsFolder_Click;
-            PMIOpenLyricsFolder.Click += PMIOpenLyricsFolder_Click;
             PMIOpenTempFolder.Click += PMIOpenTempFolder_Click;
             PMIOpenModelsFolder.Click += PMIOpenModelsFolder_Click;
             PMICheckUpdate.Click += PMICheckUpdate_Click;
@@ -296,7 +285,6 @@ public class TaskbarIconUtil
             PSMFoldersMenu.Items.Add(PMIOpenDownloadsFolder);
             PSMFoldersMenu.Items.Add(PMIOpenCliplistsFolder);
             PSMFoldersMenu.Items.Add(PMIOpenLogsFolder);
-            PSMFoldersMenu.Items.Add(PMIOpenLyricsFolder);
             PSMFoldersMenu.Items.Add(PMIOpenTempFolder);
             PSMFoldersMenu.Items.Add(PMIOpenModelsFolder);
 
@@ -402,7 +390,6 @@ public class TaskbarIconUtil
                 PMIOpenDownloadsFolder.Click -= PMIOpenDownloadsFolder_Click;
                 PMIOpenCliplistsFolder.Click -= PMIOpenCliplistsFolder_Click;
                 PMIOpenLogsFolder.Click -= PMIOpenLogsFolder_Click;
-                PMIOpenLyricsFolder.Click -= PMIOpenLyricsFolder_Click;
                 PMIOpenTempFolder.Click -= PMIOpenTempFolder_Click;
                 PMIOpenModelsFolder.Click -= PMIOpenModelsFolder_Click;
                 PMICheckUpdate.Click -= PMICheckUpdate_Click;
@@ -842,22 +829,6 @@ public class TaskbarIconUtil
         try
         {
             _WMain?.MIOpenLogsFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
-        }
-        catch (Exception ex)
-        {
-            _WMain?.WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
-    private static void PMIOpenLyricsFolder_Click(object? sender, EventArgs e)
-    {
-        try
-        {
-            _WMain?.MIOpenLyricsFolder_Click(sender, new RoutedEventArgs(MenuItem.ClickEvent));
         }
         catch (Exception ex)
         {

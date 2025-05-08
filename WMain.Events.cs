@@ -1,19 +1,9 @@
-﻿using Brushes = System.Windows.Media.Brushes;
-using Control = System.Windows.Controls.Control;
-using CustomToolbox.Common;
-using static CustomToolbox.Common.Sets.EnumSet;
+﻿using CustomToolbox.Common;
 using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Models;
 using CustomToolbox.Common.Models.ImportPlaylist;
 using CustomToolbox.Common.Sets;
-using DataFormats = System.Windows.DataFormats;
-using DragDropEffects = System.Windows.DragDropEffects;
-using DragEventArgs = System.Windows.DragEventArgs;
 using H.NotifyIcon;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
-using Path = System.IO.Path;
-using RichTextBox = System.Windows.Controls.RichTextBox;
-using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 using Serilog.Events;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -28,6 +18,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using static CustomToolbox.Common.Sets.EnumSet;
+using Brushes = System.Windows.Media.Brushes;
+using Control = System.Windows.Controls.Control;
+using DataFormats = System.Windows.DataFormats;
+using DragDropEffects = System.Windows.DragDropEffects;
+using DragEventArgs = System.Windows.DragEventArgs;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using Path = System.IO.Path;
+using RichTextBox = System.Windows.Controls.RichTextBox;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 using TabControl = System.Windows.Controls.TabControl;
 
 namespace CustomToolbox;
@@ -485,22 +485,6 @@ public partial class WMain : Window
         try
         {
             CustomFunction.OpenFolder(VariableSet.LogsFolderPath);
-        }
-        catch (Exception ex)
-        {
-            WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
-    public void MIOpenLyricsFolder_Click(object? sender, RoutedEventArgs e)
-    {
-        try
-        {
-            CustomFunction.OpenFolder(VariableSet.LyricsFolderPath);
         }
         catch (Exception ex)
         {

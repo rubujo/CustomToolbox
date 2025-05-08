@@ -1,17 +1,17 @@
-﻿using Control = System.Windows.Controls.Control;
-using CustomToolbox.Common;
+﻿using CustomToolbox.Common;
 using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Models;
 using CustomToolbox.Common.Sets;
-using static CustomToolbox.Common.Sets.EnumSet;
 using CustomToolbox.Common.Utils;
 using H.NotifyIcon.Core;
 using Mpv.NET.API;
 using Mpv.NET.Player;
 using Serilog.Events;
 using System.ComponentModel;
-using System.Security.Cryptography;
 using System.Globalization;
+using System.Security.Cryptography;
+using static CustomToolbox.Common.Sets.EnumSet;
+using Control = System.Windows.Controls.Control;
 
 namespace CustomToolbox;
 
@@ -140,40 +140,6 @@ public partial class WMain
                 MPPlayer.Load(path);
                 MPPlayer.Resume();
 
-                string lyricFilePath = string.Empty;
-
-                // 判斷 clipData.SubtitleFileUrl 是否為空值或 null
-                // 且是否有啟用自動歌詞。
-                if (string.IsNullOrEmpty(clipData.SubtitleFileUrl) &&
-                    Properties.Settings.Default.NetPlaylistAutoLyric)
-                {
-                    string[] lyricData = await GetLrcFileUrl(
-                        clipData.VideoUrlOrID ?? string.Empty,
-                        clipData.Name ?? string.Empty,
-                        clipData.StartTime.TotalSeconds.ToString());
-
-                    string lyricFileUrl = lyricData[0],
-                        offsetSeconds = lyricData[1];
-
-                    // 轉換成正體中文。
-                    bool translateToTChinese = Properties.Settings.Default.OpenCCS2TWP;
-
-                    // 取得處理過 *.lrc 檔案的路徑。
-                    lyricFilePath = await LyricsUtil.GetProcessedLrcFilePath(
-                        lyricFileUrl,
-                        translateToTChinese);
-
-                    // *.lrc 檔案的網址。
-                    clipData.SubtitleFileUrl = lyricFileUrl;
-
-                    // 設定字幕檔的延遲秒數。
-                    MPPlayer?.API.SetPropertyString("sub-delay", offsetSeconds);
-                }
-                else
-                {
-                    MPPlayer?.API.SetPropertyString("sub-delay", "0");
-                }
-
                 // 延後 3 秒後才執行載入字幕檔。
                 await Task.Delay(3000).ContinueWith(t =>
                 {
@@ -182,15 +148,12 @@ public partial class WMain
                         // 當 clipData.SubtitleFileUrl 不為空值或 null 時才載入字幕檔。
                         if (!string.IsNullOrEmpty(clipData.SubtitleFileUrl))
                         {
-                            // 判斷是載入處理過的 *.lrc 檔案還是原始的 *.lrc 檔案。
-                            string subtitlePath = !string.IsNullOrEmpty(lyricFilePath) ?
-                                lyricFilePath :
-                                clipData.SubtitleFileUrl;
+                            MPPlayer?.API.SetPropertyString("sub-delay", "0");
 
                             MPPlayer?.API.Command(
                             [
                                 "sub-add",
-                                subtitlePath
+                                clipData.SubtitleFileUrl
                             ]);
                         }
                     }
@@ -475,19 +438,6 @@ public partial class WMain
                         message,
                         NotificationIcon.Info);
                     TaskbarIconUtil.SetToolTip(message);
-
-                    if (Properties.Settings.Default.DiscordRichPresence)
-                    {
-                        string details = string.IsNullOrEmpty(clipData?.Name) ?
-                            MsgSet.MsgPlayingClip :
-                            clipData.Name;
-
-                        DiscordRichPresenceUtil.SetRichPresence(
-                            details: details,
-                            state: MsgSet.StatePlaying,
-                            timestamps: DiscordRichPresenceUtil.GetTimestamps(),
-                            assets: AssetsSet.AssetsPlay);
-                    }
                 }
             }
             else
@@ -517,25 +467,9 @@ public partial class WMain
 
                     break;
                 case ClipPlayerStatus.Paused:
-                    if (Properties.Settings.Default.DiscordRichPresence)
-                    {
-                        DiscordRichPresenceUtil.SetRichPresence(
-                            state: MsgSet.StatePause,
-                            timestamps: DiscordRichPresenceUtil.GetTimestamps(),
-                            assets: AssetsSet.AssetsPause);
-                    }
-
                     break;
                 case ClipPlayerStatus.Idle:
                     SetClipPlayerButtons(true);
-
-                    if (Properties.Settings.Default.DiscordRichPresence)
-                    {
-                        DiscordRichPresenceUtil.SetRichPresence(
-                            state: MsgSet.StateStop,
-                            timestamps: DiscordRichPresenceUtil.GetTimestamps(),
-                            assets: AssetsSet.AssetsStop);
-                    }
 
                     break;
                 default:

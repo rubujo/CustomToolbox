@@ -1,20 +1,14 @@
-﻿using Application = System.Windows.Application;
-using ConsoleTableExt;
+﻿using ConsoleTableExt;
 using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Models;
 using CustomToolbox.Common.Utils;
-using static CustomToolbox.Common.Sets.EnumSet;
 using Humanizer;
-using Label = System.Windows.Controls.Label;
 using Microsoft.Playwright;
 using OpenCCNET;
-using ProgressBar = System.Windows.Controls.ProgressBar;
 using Serilog.Events;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Net.Http;
-using System.Text.Json;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Whisper.net;
@@ -24,6 +18,10 @@ using Xabe.FFmpeg;
 using YoutubeDLSharp;
 using YoutubeDLSharp.Metadata;
 using YoutubeDLSharp.Options;
+using static CustomToolbox.Common.Sets.EnumSet;
+using Application = System.Windows.Application;
+using Label = System.Windows.Controls.Label;
+using ProgressBar = System.Windows.Controls.ProgressBar;
 
 namespace CustomToolbox.Common.Sets;
 

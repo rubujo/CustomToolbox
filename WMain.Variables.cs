@@ -1,5 +1,4 @@
 ﻿using CustomToolbox.Common.Models;
-using DiscordRPC;
 using Mpv.NET.Player;
 using System.Collections.ObjectModel;
 using System.Net.Http;
@@ -22,11 +21,6 @@ public partial class WMain
     public MpvPlayer? MPPlayer = null;
 
     /// <summary>
-    /// 共用的 DiscordRpcClient
-    /// </summary>
-    public DiscordRpcClient? GlobalDRClient = null;
-
-    /// <summary>
     /// 共用的 ClipPlayer
     /// </summary>
     public readonly ClipPlayer CPPlayer = new();
@@ -45,7 +39,7 @@ public partial class WMain
     /// <summary>
     /// 共用的 ObservableCollection&lt;ClipData&gt;
     /// </summary>
-    private readonly ObservableCollection<ClipData> GlobalDataSet = new();
+    private readonly ObservableCollection<ClipData> GlobalDataSet = [];
 
     /// <summary>
     /// 共用的 IHttpClientFactory

@@ -1,21 +1,21 @@
-﻿using CheckBox = System.Windows.Controls.CheckBox;
-using ComboBox = System.Windows.Controls.ComboBox;
-using Control = System.Windows.Controls.Control;
-using CustomToolbox.Common;
-using static CustomToolbox.Common.Sets.EnumSet;
+﻿using CustomToolbox.Common;
 using CustomToolbox.Common.Extensions;
 using CustomToolbox.Common.Models;
 using CustomToolbox.Common.Sets;
 using CustomToolbox.Common.Utils;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Serilog.Events;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using TextBox = System.Windows.Controls.TextBox;
 using Whisper.net.Ggml;
+using static CustomToolbox.Common.Sets.EnumSet;
+using CheckBox = System.Windows.Controls.CheckBox;
+using ComboBox = System.Windows.Controls.ComboBox;
+using Control = System.Windows.Controls.Control;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace CustomToolbox;
 
@@ -704,50 +704,6 @@ public partial class WMain
         }
     }
 
-    private void CBWhisperSpeedUp2x_Checked(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            // 2023/10/6 暫時先保留不使用。
-            CheckBox? checkBox = (CheckBox?)sender;
-
-            if (checkBox == null)
-            {
-                return;
-            }
-        }
-        catch (Exception ex)
-        {
-            WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
-    private void CBWhisperSpeedUp2x_Unchecked(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            // 2023/10/6 暫時先保留不使用。
-            CheckBox? checkBox = (CheckBox?)sender;
-
-            if (checkBox == null)
-            {
-                return;
-            }
-        }
-        catch (Exception ex)
-        {
-            WriteLog(
-                message: MsgSet.GetFmtStr(
-                    MsgSet.MsgErrorOccured,
-                    ex.GetExceptionMessage()),
-                logEventLevel: LogEventLevel.Error);
-        }
-    }
-
     private void CBWhisperTranslateToEnglish_Checked(object sender, RoutedEventArgs e)
     {
         try
@@ -878,7 +834,6 @@ public partial class WMain
                     TBWhisperBeamSize,
                     TBWhisperPatience,
                     TBWhisperBestOf,
-                    CBWhisperSpeedUp2x,
                     CBWhisperTranslateToEnglish,
                     CBWhisperExportWebVTTAlso
                 ];
@@ -930,7 +885,6 @@ public partial class WMain
                     string language = CBWhisperLanguage.Text;
 
                     bool enableTranslate = CBWhisperTranslateToEnglish.IsChecked ?? false;
-                    bool enableSpeedUp2x = CBWhisperSpeedUp2x.IsChecked ?? false;
 
                     GgmlType ggmlType = WhisperUtil.GetModelType(CBWhisperModel.Text);
 
@@ -1019,7 +973,6 @@ public partial class WMain
                     TBWhisperBeamSize,
                     TBWhisperPatience,
                     TBWhisperBestOf,
-                    CBWhisperSpeedUp2x,
                     CBWhisperTranslateToEnglish,
                     CBWhisperExportWebVTTAlso
                 ];
@@ -1070,7 +1023,6 @@ public partial class WMain
                     string language = CBWhisperLanguage.Text;
 
                     bool enableTranslate = CBWhisperTranslateToEnglish.IsChecked ?? false;
-                    bool enableSpeedUp2x = CBWhisperSpeedUp2x.IsChecked ?? false;
                     bool exportWebVtt = CBWhisperExportWebVTTAlso.IsChecked ?? false;
 
                     GgmlType ggmlType = WhisperUtil.GetModelType(CBWhisperModel.Text);

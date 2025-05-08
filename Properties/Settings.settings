@@ -38,23 +38,11 @@
     <Setting Name="AppLangCode" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="NetPlaylistAutoLyric" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="MpvNetLibLogVerbose" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="DiscordRichPresence" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="DiscrodApplicationID" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">1039536928221036576</Value>
-    </Setting>
-    <Setting Name="DiscrodMaxConnectionFailedCount" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">10</Value>
-    </Setting>
     <Setting Name="UserAgent" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36</Value>
+      <Value Profile="(Default)">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36</Value>
     </Setting>
     <Setting Name="RDGContentRow1Height" Type="System.Windows.GridLength" Scope="User">
       <Value Profile="(Default)">2*</Value>
@@ -159,8 +147,7 @@
       <Value Profile="(Default)">1.37.0</Value>
     </Setting>
     <Setting Name="SecChUa" Type="System.String" Scope="User">
-      <Value Profile="(Default)">
-"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"</Value>
+      <Value Profile="(Default)">"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"</Value>
     </Setting>
     <Setting Name="SecChUaMobile" Type="System.String" Scope="Application">
       <Value Profile="(Default)">?0</Value>
@@ -203,9 +190,6 @@
     </Setting>
     <Setting Name="WhisperLanguage" Type="System.String" Scope="Application">
       <Value Profile="(Default)">auto</Value>
-    </Setting>
-    <Setting Name="WhisperSpeedUp2x" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="WhisperTranslateToEnglish" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
