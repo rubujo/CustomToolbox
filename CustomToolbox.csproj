@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="AirspaceFixer" Version="1.0.6" />
-    <PackageReference Include="AngleSharp" Version="1.0.7" />
+    <PackageReference Include="AngleSharp" Version="1.5.0" />
     <PackageReference Include="ConsoleTableExt" Version="3.2.0" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="Downloader" Version="3.0.6" />
